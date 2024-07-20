@@ -1,0 +1,5 @@
+*.atsln
+.vs
+*.componentinfo.xml
+*.cproj
+main.c
