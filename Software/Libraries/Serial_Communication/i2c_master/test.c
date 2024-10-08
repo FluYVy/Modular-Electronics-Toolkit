@@ -5,7 +5,6 @@
  * Author : Florian Reichart
  */ 
 
-#include <avr/io.h>
 #include "i2c_master.h"
 #include <util/delay.h>
 
