@@ -5,8 +5,6 @@
  *  Author: FluYVy
  */
 
-#include <avr/io.h>
-#include <util/twi.h>
 #include "i2c_master.h"
 
 void i2c_master_init(uint32_t i2c_frequency)
@@ -21,11 +19,11 @@ void i2c_master_init(uint32_t i2c_frequency)
 	if (i2c_frequency <= 83333)
 	{
 		TWSR |= 3;
-		TWBR = ((F_CPU/I2C_FREQUENCY)-16)/(128);
+		TWBR = ((F_CPU/i2c_frequency)-16)/(128);
 	}else if(i2c_frequency <= 250000)
 	{
 		TWSR |= 2;
-		TWBR = ((F_CPU/I2C_FREQUENCY)-16)/(32);
+		TWBR = ((F_CPU/i2c_frequency)-16)/(32);
 	}else if(i2c_frequency <= 500000)
 	{
 		TWSR |= 1;

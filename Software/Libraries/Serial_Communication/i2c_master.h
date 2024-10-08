@@ -5,9 +5,13 @@
  *  Author: FluYVy
  */ 
 
-
 #ifndef I2C_MASTER_H_
 #define I2C_MASTER_H_
+
+#include <avr/io.h>
+#include <avr/portpins.h>
+#include <util/twi.h>
+
 
 #ifndef F_CPU
 #define F_CPU 12000000UL
