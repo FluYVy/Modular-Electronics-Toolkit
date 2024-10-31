@@ -36,9 +36,6 @@ void i2c_master_init(uint32_t i2c_frequency)
 	{
 		TWBR = ((F_CPU/i2c_frequency) - 16) / (2); // Calculate baud rate
 	}
-
-	// Enable the I2C bus
-	TWCR |= (1<<TWEN);
 }
 
 void i2c_master_start()
