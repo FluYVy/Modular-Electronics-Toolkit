@@ -2544,6 +2544,16 @@
 	)
 	(wire
 		(pts
+			(xy 49.53 99.06) (xy 63.5 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3b12e046-2426-4e7e-87ba-664db1162438")
+	)
+	(wire
+		(pts
 			(xy 138.43 68.58) (xy 147.32 68.58)
 		)
 		(stroke
@@ -2621,16 +2631,6 @@
 			(type default)
 		)
 		(uuid "5086d2b6-40a5-4437-97e9-4852a7a6aa60")
-	)
-	(wire
-		(pts
-			(xy 49.53 86.36) (xy 67.31 86.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "52ced1c2-56b9-48f9-ac93-85f3cb0e03f5")
 	)
 	(wire
 		(pts
@@ -2834,7 +2834,7 @@
 	)
 	(wire
 		(pts
-			(xy 58.42 118.11) (xy 58.42 99.06)
+			(xy 58.42 86.36) (xy 58.42 118.11)
 		)
 		(stroke
 			(width 0)
@@ -2984,6 +2984,16 @@
 	)
 	(wire
 		(pts
+			(xy 63.5 86.36) (xy 67.31 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a7694b96-e7aa-4b07-8499-ada48dd5da27")
+	)
+	(wire
+		(pts
 			(xy 205.74 110.49) (xy 203.2 110.49)
 		)
 		(stroke
@@ -2991,6 +3001,16 @@
 			(type default)
 		)
 		(uuid "a9d64411-f351-4a2f-9d06-d7dc7459f650")
+	)
+	(wire
+		(pts
+			(xy 63.5 99.06) (xy 63.5 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "aaa88b9e-8cf8-4cfb-a248-5667f3202560")
 	)
 	(wire
 		(pts
@@ -3074,16 +3094,6 @@
 	)
 	(wire
 		(pts
-			(xy 58.42 99.06) (xy 49.53 99.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bdf2ea8f-f889-417a-955e-fad5c17f2ba0")
-	)
-	(wire
-		(pts
 			(xy 147.32 113.03) (xy 146.05 113.03)
 		)
 		(stroke
@@ -3121,6 +3131,16 @@
 			(type default)
 		)
 		(uuid "caf11384-528f-41b9-8e78-396d8ab73108")
+	)
+	(wire
+		(pts
+			(xy 58.42 86.36) (xy 49.53 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cb2a7adf-42fc-4ec6-9a84-cc7329d7b9c9")
 	)
 	(wire
 		(pts
@@ -3364,7 +3384,7 @@
 	)
 	(text "VCC"
 		(exclude_from_sim no)
-		(at 50.546 85.598 0)
+		(at 51.054 98.044 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3374,7 +3394,7 @@
 	)
 	(text "GND"
 		(exclude_from_sim no)
-		(at 51.054 98.298 0)
+		(at 50.8 85.09 0)
 		(effects
 			(font
 				(size 1.27 1.27)
