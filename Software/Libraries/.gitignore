@@ -3,5 +3,5 @@
 *.componentinfo.xml
 *.cproj
 main.c
-
+*.dwf3work
 Debug/
