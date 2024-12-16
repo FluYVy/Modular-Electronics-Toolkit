@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@blockly/field-bitmap": "^6.0.9",
+    "blockly": "^11.1.1"
+  }
+}

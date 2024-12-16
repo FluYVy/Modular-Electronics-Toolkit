@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-css.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
+
+        <script src="./node_modules/blockly/blockly_compressed.js"></script>
+        <script src="./node_modules/blockly/blocks_compressed.js"></script>
+        <script src="./node_modules/blockly/msg/en.js"></script>
+
+        <script src="./blockly/Blocks/special.js"></script>
+        <script src="./blockly/Blocks/scd41.js"></script>
+        <script src="./blockly/Blocks/sevseg.js"></script>
+        <script src="./blockly/Blocks/utils.js"></script>
+        <script src="./blockly/Blocks/Datatypes.js"></script>
+
+
+        <script src="./generator/generator.js" type="module"></script>
+        <script>
+            function copyCodeToClipboard() {
+                const html = document.getElementById('codeSaver').innerHTML
+
+                navigator.clipboard.writeText(document.getElementById('codeSaver').innerHTML.replaceAll('<br>', '\n').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll(' UL', 'UL'));
+            }
+
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+              document.querySelectorAll("pre code").forEach((block) => {
+                hljs.highlightElement(block);
+              });
+            });
+          </script>          
+    </head>
+    <body>
+
+        <div id="blocklyDiv" style="height: 50vh;"></div>
+        <div>
+            <pre id="codeDiv"></pre>
+            <div id="codeSaver" hidden="hidden"></div>
+            <button onclick="copyCodeToClipboard()" style="position: absolute; top: 50vh; right: 0; margin: 30px;" >COPY</button>
+        </div>
+        
+        <script src="./blockly/toolbox.js"></script>
+    </body>
+</html>
