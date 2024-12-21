@@ -35,7 +35,7 @@ uint8_t scd41_get_current_state()
  * @brief Get last measured CO2 value
  * @return CO2 concentration in ppm
  */
-uint16_t get_co2()
+uint16_t scd41_get_co2()
 {
 	return last_co2;
 }
@@ -44,18 +44,18 @@ uint16_t get_co2()
  * @brief Get last measured temperature
  * @return Temperature
  */
-uint16_t get_temperature()
+float scd41_get_temperature()
 {
-	return last_temperature;
+	return (float)(-45.0+175.0*((float)last_temperature/65535.0));
 }
 
 /**
  * @brief Get last measured humidity
  * @return Relative humidity
  */
-uint16_t get_humidity()
+float scd41_get_humidity()
 {
-	return last_humidity;
+	return (float)(100.0*(float)last_humidity/65535.0);
 }
 
 /**
@@ -354,7 +354,7 @@ uint64_t get_serial_number()
 {
 	uint16_t data[3];
 	scd41_sequence_read(SCD41_COMMAND_GET_SENSOR_ALTITUDE, data, 3);
-	return (data[2])<<32 | (data[1])<<16 | (data[0]));
+	return (data[2])<<32 | (data[1])<<16 | (data[0]);
 }
 
 /**
@@ -541,9 +541,9 @@ void scd41_sequence_write(uint16_t command, uint16_t data)
 {
 	i2c_master_start();
 	i2c_master_sendAddress(SCD41_ADDRESS, 0x00);
-	i2c_master_sendChar(command<<8);
+	i2c_master_sendChar(command>>8);
 	i2c_master_sendChar(command);
-	i2c_master_sendChar(data<<8);
+	i2c_master_sendChar(data>>8);
 	i2c_master_sendChar(data);
 	i2c_master_sendChar(generate_checksum(data));
 	i2c_master_stop();
@@ -557,7 +557,7 @@ void scd41_sequence_send_command(uint16_t command)
 {
 	i2c_master_start();
 	i2c_master_sendAddress(SCD41_ADDRESS, 0x00);
-	i2c_master_sendChar(command<<8);
+	i2c_master_sendChar(command>>8);
 	i2c_master_sendChar(command);
 	i2c_master_stop();
 }
@@ -575,8 +575,10 @@ void scd41_sequence_read(uint16_t command, uint16_t readData[], uint8_t length)
 	i2c_master_sendAddress(SCD41_ADDRESS, 0x00);
 	
 	// Send command bytes
-	i2c_master_sendChar(command<<8);    // Upper byte
+	i2c_master_sendChar(command>>8);    // Upper byte
 	i2c_master_sendChar(command);       // Lower byte
+	
+	_delay_ms(2);	
 	
 	// Restart I2C in read mode
 	i2c_master_start();
