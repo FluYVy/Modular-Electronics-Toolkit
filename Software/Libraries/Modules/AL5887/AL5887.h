@@ -10,36 +10,70 @@
 
 #include "i2c_master.h"
 
-// Define the I2C address based on the selected address type.
-#if AL5887_I2C_ADDRESS_TYPE == 3
-#define AL5887_I2C_ADDRESS                 0x33 // I2C address for type 3
-#elif AL5887_I2C_ADDRESS_TYPE == 2
-#define AL5887_I2C_ADDRESS                 0x32 // I2C address for type 2
-#elif AL5887_I2C_ADDRESS_TYPE == 1
-#define AL5887_I2C_ADDRESS                 0x31 // I2C address for type 1
-#else
-#define AL5887_I2C_ADDRESS                 0x30 // Default I2C address
-#endif
+/**
+ * @def AL5887_I2C_ADDRESS
+ * @brief The I2C address of the AL5887 device.
+ * @note Standard I2C address of the device.is 0x30. Only change if necessary.
+ * @warning Do not change this unless you know what you're doing. The default value is typically correct and can be left unchanged.
+ */
+#define AL5887_I2C_ADDRESS                 0x30 
 
-// Register Addresses for the AL5887 device
-#define AL5887_REGISTER_DEVICE_CONFIG0     0x00 // Device Configuration Register 0
-#define AL5887_REGISTER_DEVICE_CONFIG1     0x01 // Device Configuration Register 1
+/**
+ * @def AL5887_REGISTER_DEVICE_CONFIG0
+ * @brief The address of the first device configuration register.
+*/
+#define AL5887_REGISTER_DEVICE_CONFIG0     0x00
 
-// Brightness Registers for RGB LEDs
-#define AL5887_REGISTER_BRIGHTNESS_RGB00   0x08 // Brightness register for RGB LED 0
-#define AL5887_REGISTER_BRIGHTNESS_RGB01   0x09 // Brightness register for RGB LED 1
-#define AL5887_REGISTER_BRIGHTNESS_RGB02   0x0A // Brightness register for RGB LED 2
-#define AL5887_REGISTER_BRIGHTNESS_RGB03   0x0B // Brightness register for RGB LED 3
-#define AL5887_REGISTER_BRIGHTNESS_RGB04   0x0C // Brightness register for RGB LED 4
-#define AL5887_REGISTER_BRIGHTNESS_RGB05   0x0D // Brightness register for RGB LED 5
-#define AL5887_REGISTER_BRIGHTNESS_RGB06   0x0E // Brightness register for RGB LED 6
-#define AL5887_REGISTER_BRIGHTNESS_RGB07   0x0F // Brightness register for RGB LED 7
-#define AL5887_REGISTER_BRIGHTNESS_RGB08   0x10 // Brightness register for RGB LED 8
-#define AL5887_REGISTER_BRIGHTNESS_RGB09   0x11 // Brightness register for RGB LED 9
-#define AL5887_REGISTER_BRIGHTNESS_RGB10   0x12 // Brightness register for RGB LED 10
-#define AL5887_REGISTER_BRIGHTNESS_RGB11   0x13 // Brightness register for RGB LED 11
+/**
+ * @def AL5887_REGISTER_DEVICE_CONFIG1
+ * @brief The address of the second device configuration register.
+*/
+#define AL5887_REGISTER_DEVICE_CONFIG1     0x01
 
-#define AL5887_BASE_REGISTER_VALUE_LEDS    0x14 // Base register for LED values
+
+/**
+ * @defgroup BrighnessRegisters Brightness Registers for RGB LEDs
+ * @brief Register addresses for controlling the brightness of the LEDs.
+ *
+ * These definitions represent the address of different LEDS
+ * The following options are available:
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB00`    (0x08): Brightness register for RGB LED 0
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB01`    (0x09): Brightness register for RGB LED 1
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB02`    (0x0A): Brightness register for RGB LED 2
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB03`    (0x0B): Brightness register for RGB LED 3
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB04`    (0x0C): Brightness register for RGB LED 4
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB05`    (0x0D): Brightness register for RGB LED 5
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB06`    (0x0E): Brightness register for RGB LED 6
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB07`    (0x0F): Brightness register for RGB LED 7
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB08`    (0x10): Brightness register for RGB LED 8
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB09`    (0x11): Brightness register for RGB LED 9
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB10`    (0x12): Brightness register for RGB LED 10
+ * - `AL5887_REGISTER_BRIGHTNESS_RGB11`    (0x13): Brightness register for RGB LED 11
+ *
+ * @{
+ */
+
+#define AL5887_REGISTER_BRIGHTNESS_RGB00   0x08
+#define AL5887_REGISTER_BRIGHTNESS_RGB01   0x09
+#define AL5887_REGISTER_BRIGHTNESS_RGB02   0x0A
+#define AL5887_REGISTER_BRIGHTNESS_RGB03   0x0B
+#define AL5887_REGISTER_BRIGHTNESS_RGB04   0x0C
+#define AL5887_REGISTER_BRIGHTNESS_RGB05   0x0D
+#define AL5887_REGISTER_BRIGHTNESS_RGB06   0x0E
+#define AL5887_REGISTER_BRIGHTNESS_RGB07   0x0F
+#define AL5887_REGISTER_BRIGHTNESS_RGB08   0x10
+#define AL5887_REGISTER_BRIGHTNESS_RGB09   0x11
+#define AL5887_REGISTER_BRIGHTNESS_RGB10   0x12
+#define AL5887_REGISTER_BRIGHTNESS_RGB11   0x13
+
+/** @} */
+
+/**
+ * @def AL5887_BASE_REGISTER_VALUE_LEDS
+ * @brief Base register value to controll the LEDs
+*/
+#define AL5887_BASE_REGISTER_VALUE_LEDS    0x14
+
 
 /**
 * @brief Starts the AL5887 device.
