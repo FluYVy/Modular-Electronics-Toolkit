@@ -67,20 +67,20 @@ void spi_master_device_init(SpiDevice *device)
 	*(device->cs_port) |= (1 << device->cs_pin);
 }
 
-uint8_t spi_master_transfer(SpiDevice *device, uint8_t data)
+void spi_master_transfer(SpiDevice *device, uint8_t data[], uint8_t length)
 {
-	// Select the device by pulling the CS pin low
+	// Begin SPI transaction by activating chip select
 	*(device->cs_port) &= ~(1 << device->cs_pin);
 
-	// Load the data into the SPI data register to start the transfer
-	SPDR = data;
+	// Transfer data bytes bidirectionally
+	for (uint8_t cur_byte = 0; cur_byte < length; cur_byte++)
+	{
+		SPDR = data[cur_byte];			// Write byte to transmit register
+		while (!(SPSR & (1 << SPIF)));	// Poll until transmission complete
+		data[cur_byte] = SPDR;			// Read received byte
+	}
 	
-	// Wait for the transmission to complete
-	while (!(SPSR & (1 << SPIF)));
 
-	// Deselect the device by setting the CS pin high
+	// End SPI transaction by deactivating chip select
 	*(device->cs_port) |= (1 << device->cs_pin);
-
-	// Return the received data from the SPI data register
-	return SPDR;
 }

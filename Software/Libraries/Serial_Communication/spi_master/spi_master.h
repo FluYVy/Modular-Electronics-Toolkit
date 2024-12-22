@@ -49,15 +49,16 @@ void spi_master_init(uint8_t prescaler);
 void spi_master_device_init(SpiDevice *device);
 
 /**
-* @brief Transfers a byte of data via SPI.
+* @brief Transfers data via SPI.
 *
-* This function sends a byte of data to the specified SPI device and receives a
-* byte of data in return. It handles the necessary chip select (CS) signaling.
+* This function sends multiple bytes of data to the specified SPI device and receives
+* data in return. It handles the necessary chip select (CS) signaling. The received
+* data overwrites the input data array.
 *
 * @param[in] device A pointer to the SpiDevice structure representing the target SPI device.
-* @param[in] data The byte of data to send to the SPI device.
-* @return The byte received from the SPI device during the transfer.
+* @param[in,out] data Array of bytes to send. Received data will be stored back in this array.
+* @param[in] length Number of bytes to transfer.
 */
-uint8_t spi_master_transfer(SpiDevice *device, uint8_t data);
+void spi_master_transfer(SpiDevice *device, uint8_t data[], uint8_t length);
 
 #endif /* SPI_MASTER_H_ */
