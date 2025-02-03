@@ -11,6 +11,23 @@
 
 #include "spi_master.h"
 
+
+// Register Addresses
+#define MAX7221_REG_NO_OP           0x00
+#define MAX7221_REG_DIGIT0         0x01
+#define MAX7221_REG_DIGIT1         0x02
+#define MAX7221_REG_DIGIT2         0x03
+#define MAX7221_REG_DIGIT3         0x04
+#define MAX7221_REG_DIGIT4         0x05
+#define MAX7221_REG_DIGIT5         0x06
+#define MAX7221_REG_DIGIT6         0x07
+#define MAX7221_REG_DIGIT7         0x08
+#define MAX7221_REG_DECODE_MODE    0x09
+#define MAX7221_REG_INTENSITY      0x0A
+#define MAX7221_REG_SCAN_LIMIT     0x0B
+#define MAX7221_REG_SHUTDOWN       0x0C
+#define MAX7221_REG_DISPLAY_TEST   0x0F
+
 /**
  * @defgroup Addresses MAX7221 Addreses
  * Addresses for controlling the max7221 chip
@@ -19,45 +36,61 @@
 /**
  * @def MAX7221_ADDRESS_DIGIT
  * Address to control the digits
- * @note This is the offset of the first digit address. To address any digit add the digit to this offset.
+ * @note This is the offset of the first digit address. To address any digit add the digit to this offset. But it starts at the 5th LED.
  * @ingroup Address
  */
-#define MAX7221_ADDRESS_DIGIT           0x01
+#define MAX7221_REG_DIGIT           0x01
 
 /**
  * @def MAX7221_ADDRESS_DECODE_MODE
  * Address to set the decode mode
  * @ingroup Address
  */
-#define MAX7221_ADDRESS_DECODE_MODE     0x09
+// Decode modes
+#define MAX7221_NO_DECODE		0x00		// You can control each segment [a,b,c,d,e,f,g,dp]
+#define MAX7221_DECODE_TOP		0x0F		// Only decode top row
+#define MAX7221_DECODE_BOTTOM	0xF0		// Only decode bottom row
+#define MAX7221_DECODE_ALL		0xFF		// You can send the number or letter directly and it will automatically convert it.
 
 /**
  * @def MAX7221_ADDRESS_DIGIT
  * Address to control the intensity of the digits
  * @ingroup Address
  */
-#define MAX7221_ADDRESS_INTENSITY       0x0A
+
+
+
 
 /**
  * @def MAX7221_ADDRESS_DIGIT
  * Address to control the scan limit
  * @ingroup Address
  */
-#define MAX7221_ADDRESS_SCAN_LIMIT      0x0B
+#define MAX7221_SCAN_LIMIT_0	0x00
+#define MAX7221_SCAN_LIMIT_1	0x01
+#define MAX7221_SCAN_LIMIT_2	0x02
+#define MAX7221_SCAN_LIMIT_3	0x03
+#define MAX7221_SCAN_LIMIT_4	0x04
+#define MAX7221_SCAN_LIMIT_5	0x05
+#define MAX7221_SCAN_LIMIT_6	0x06
+#define MAX7221_SCAN_LIMIT_7	0x07
+
 
 /**
  * @def MAX7221_ADDRESS_DIGIT
  * Address to shutdown and start the address
  * @ingroup Address
  */
-#define MAX7221_ADDRESS_SHUTDOWN        0x0C
+#define MAX7221_SHUTDOWN_MODE      0x00
+#define MAX7221_NORMAL_OPERATION   0x01
 
 /**
  * @def MAX7221_ADDRESS_DIGIT
- * Address to controll the test mode of the max7221
+ * Address to control the test mode of the max7221
  * @ingroup Address
  */
-#define MAX7221_ADDRESS_DISPLAY_TEST    0x0F
+#define MAX7221_DISPLAY_TEST_OFF   0x00
+#define MAX7221_DISPLAY_TEST_ON    0x01
 
 
 /**
@@ -85,22 +118,22 @@
  *
  * @{
  */
-#define MAX7221_DIGIT_0                 0x00
-#define MAX7221_DIGIT_1                 0x01
-#define MAX7221_DIGIT_2                 0x02
-#define MAX7221_DIGIT_3                 0x03
-#define MAX7221_DIGIT_4                 0x04
-#define MAX7221_DIGIT_5                 0x05
-#define MAX7221_DIGIT_6                 0x06
-#define MAX7221_DIGIT_7                 0x07
-#define MAX7221_DIGIT_8                 0x08
-#define MAX7221_DIGIT_9                 0x09
-#define MAX7221_DIGIT_HYPHEN            0x0A
-#define MAX7221_DIGIT_E                 0x0B
-#define MAX7221_DIGIT_H                 0x0C
-#define MAX7221_DIGIT_L                 0x0D
-#define MAX7221_DIGIT_P                 0x0E
-#define MAX7221_DIGIT_BLANK             0x0F
+#define MAX7221_DISPLAY_0                 0x00
+#define MAX7221_DISPLAY_1                 0x01
+#define MAX7221_DISPLAY_2                 0x02
+#define MAX7221_DISPLAY_3                 0x03
+#define MAX7221_DISPLAY_4                 0x04
+#define MAX7221_DISPLAY_5                 0x05
+#define MAX7221_DISPLAY_6                 0x06
+#define MAX7221_DISPLAY_7                 0x07
+#define MAX7221_DISPLAY_8                 0x08
+#define MAX7221_DISPLAY_9                 0x09
+#define MAX7221_DISPLAY_HYPHEN            0x0A
+#define MAX7221_DISPLAY_E                 0x0B
+#define MAX7221_DISPLAY_H                 0x0C
+#define MAX7221_DISPLAY_L                 0x0D
+#define MAX7221_DISPLAY_P                 0x0E
+#define MAX7221_DISPLAY_BLANK             0x0F
 
 /** @} */
 
@@ -110,7 +143,7 @@
  * 
  * @param device The SPI-device of the MAX7221-chip
  */
-void max7221_start(SpiDevice device);
+void max7221_start(SpiDevice *device, uint8_t prescaler);
 
 /**
  * @brief Turns the display off
@@ -150,7 +183,7 @@ void max7221_set_digit(uint8_t digit, uint8_t value);
  * @param decimal_point Decides if there should be a decimal point or not
  *                
  */
-void max7221_set_digit_dp(uint8_t digit, uint8_t value, uint8_t decimal_point);
+void max7221_set_digit_dp(uint8_t digit, uint8_t value);
 
 /**
  * @brief Clear all displays
@@ -163,7 +196,7 @@ void max7221_clear_all();
  * Clears a single display depending of the given value
  * @param display The display to clear
  */
-void max7221_clear_display(uint8_t display);
+void max7221_clear_digit(uint8_t digit);
 
 /**
  * @brief Prints a unsigned 8-bit number on the specified display.
@@ -171,7 +204,7 @@ void max7221_clear_display(uint8_t display);
  * @param value The number to print
  * @param display The display to print on
  */
-void max7221_print_uint8(uint8_t value, uint8_t display);
+void max7221_print_uint8(uint8_t value, uint8_t digit);
 
 /**
  * @brief Prints a signed 8-bit number on the specified display.
@@ -179,7 +212,7 @@ void max7221_print_uint8(uint8_t value, uint8_t display);
  * @param value The number to print
  * @param display The display to print on
  */
-void max7221_print_int8(int8_t value, uint8_t display);
+void max7221_print_int8(int8_t value, uint8_t digit);
 
 /**
  * @brief Prints a unsigned 16-bit number on both the displays.
@@ -203,5 +236,15 @@ void max7221_print_int16(int16_t value);
  * @param decimal The number of decimal places to display
  */
 void max7221_print_float(float value, uint8_t decimal);
+
+/**  
+ * @brief Sets the display brightness  
+ *   
+ * @param brightness Value from 1-16 where:  
+ *        1 = minimum brightness (1/32 duty cycle)  
+ *        16 = maximum brightness (31/32 duty cycle)  
+ * @note Values outside 1-16 will be clamped to this range  
+ */  
+void max7221_set_brightness(uint8_t brightness);
 
 #endif /* MAX7221_H_ */
