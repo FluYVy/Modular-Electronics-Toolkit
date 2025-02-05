@@ -12,9 +12,17 @@
 #include <avr/portpins.h>
 
 // SPI Master configuration values
+#ifndef SPI_MASTER_VALUE_DORD
 #define SPI_MASTER_VALUE_DORD  1  /**< Data order: 1 = LSB first, 0 = MSB first */
+#endif
+
+#ifndef SPI_MASTER_VALUE_CPOL
 #define SPI_MASTER_VALUE_CPOL  0  /**< Clock polarity: 0 = idle low, 1 = idle high */
+#endif
+
+#ifndef SPI_MASTER_VALUE_CPHA
 #define SPI_MASTER_VALUE_CPHA  0  /**< Clock phase: 0 = leading edge, 1 = trailing edge */
+#endif
 
 /**
 * @brief Structure to represent an SPI device.

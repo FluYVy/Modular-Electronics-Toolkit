@@ -13,6 +13,7 @@ void spi_master_init(uint8_t prescaler)
 	// Set MISO (PB6) as input pin
 	DDRB |= (1 << PB7) | (1 << PB5);
 	DDRB &= ~(1 << PB6);
+	DDRB |= (1<<PB4);	// Set SS (PB4) as output pin to ensure proper master functionality
 	
 	// Reset the SPI control register and status register
 	SPCR &= 0x00;
@@ -51,11 +52,7 @@ void spi_master_init(uint8_t prescaler)
 	}
 	
 	// Enable SPI, set data order, set master mode, set clock polarity and phase
-	SPCR |= (1 << SPE) |
-	((SPI_MASTER_VALUE_DORD & 0x01) << DORD) |
-	(1 << MSTR) |
-	((SPI_MASTER_VALUE_CPOL & 0x01) << CPOL) |
-	((SPI_MASTER_VALUE_CPHA & 0x01) << CPHA);
+	SPCR |= (1 << SPE) | ((SPI_MASTER_VALUE_DORD & 0x01) << DORD) |	(1 << MSTR) | ((SPI_MASTER_VALUE_CPOL & 0x01) << CPOL) | ((SPI_MASTER_VALUE_CPHA & 0x01) << CPHA);
 }
 
 void spi_master_device_init(SpiDevice *device)
