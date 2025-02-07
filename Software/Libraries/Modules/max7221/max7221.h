@@ -205,6 +205,7 @@ void max7221_clear_digit(uint8_t digit);
  * @param display The display to print on
  */
 void max7221_print_uint8(uint8_t value, uint8_t digit);
+void max7221_print_uint8_default(uint8_t value);
 
 /**
  * @brief Prints a signed 8-bit number on the specified display.
@@ -213,20 +214,24 @@ void max7221_print_uint8(uint8_t value, uint8_t digit);
  * @param display The display to print on
  */
 void max7221_print_int8(int8_t value, uint8_t digit);
+void max7221_print_int8_default(int8_t value);
 
 /**
  * @brief Prints a unsigned 16-bit number on both the displays.
  * 
  * @param value The number to print
  */
-void max7221_print_uint16(uint16_t value);
+void max7221_print_uint16(uint16_t value, uint8_t digit);
+void max7221_print_uint16_default(uint16_t value);
 
 /**
  * @brief Prints a signed 16-bit number on both the displays.
  * 
  * @param value The number to print
  */
-void max7221_print_int16(int16_t value);
+void max7221_print_int16_length(int16_t value, uint8_t digit, uint8_t length);
+void max7221_print_int16(int16_t value, uint8_t digit);
+void max7221_print_int16_default(int16_t value);
 
 
 /**
