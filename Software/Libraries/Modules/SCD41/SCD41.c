@@ -50,8 +50,17 @@ float scd41_get_temperature()
 }
 
 /**
+ * @brief Get last raw measured temperature
+ * @return Raw Temperature
+ */
+uint16_t scd41_get_temperature_raw()
+{
+	return last_temperature;
+}
+
+/**
  * @brief Get last measured humidity
- * @return Relative humidity
+ * @return relative humidity
  */
 float scd41_get_humidity()
 {
@@ -59,9 +68,18 @@ float scd41_get_humidity()
 }
 
 /**
+ * @brief Get last raw measured humidity
+ * @return Raw relative humidity
+ */
+uint16_t scd41_get_humidity_raw()
+{
+	return last_humidity;
+}
+
+/**
  * @brief Start periodic measurement mode
  */
-void start_periodic_measurement(){
+void scd41_start_periodic_measurement(){
 	scd41_sequence_send_command(SCD41_COMMAND_START_PRERIODIC_MEASUREMENT);
 	current_state = 1;	// Set sensor state to running
 }
@@ -70,7 +88,7 @@ void start_periodic_measurement(){
  * @brief Read latest measurement from sensor
  * @note Updates last_co2, last_temperature and last_humidity
  */
-void read_measurement()
+void scd41_read_measurement()
 {
 	uint16_t data[3];
 	scd41_sequence_read(SCD41_COMMAND_READ_MEASUREMENT, data, 3);
@@ -84,7 +102,7 @@ void read_measurement()
  * @brief Stop periodic measurement mode
  * @param wait If true, waits 500ms for command completion
  */
-void stop_periodic_measurement(uint8_t wait)
+void scd41_stop_periodic_measurement(uint8_t wait)
 {
 	scd41_sequence_send_command(SCD41_COMMAND_STOP_PRERIODIC_MEASUREMENT);
 	
@@ -103,7 +121,7 @@ void stop_periodic_measurement(uint8_t wait)
  * @return CRC8 checksum
  * @note Based on: https://stackoverflow.com/a/51773839
  */
-uint8_t generate_checksum(uint16_t value)
+uint8_t scd41_generate_checksum(uint16_t value)
 {
 	uint8_t crc = 0xff; // Initialize CRC with all bits set
 	
@@ -138,7 +156,7 @@ uint8_t generate_checksum(uint16_t value)
  * @param checksum Expected checksum
  * @return 1 if valid, 0 if invalid
  */
-uint8_t check_checksum(uint16_t value, uint8_t checksum)
+uint8_t scd41_check_checksum(uint16_t value, uint8_t checksum)
 {
 	return (uint8_t)(generate_checksum(value) == checksum);
 }
@@ -147,7 +165,7 @@ uint8_t check_checksum(uint16_t value, uint8_t checksum)
  * @brief Set temperature offset for compensation
  * @param offset Temperature offset
  */
-void set_temperature_offset(uint16_t offset)
+void scd41_set_temperature_offset(uint16_t offset)
 {
 	scd41_sequence_write(SCD41_COMMAND_SET_TEMPERATURE_OFFSET, offset);
 }
@@ -156,7 +174,7 @@ void set_temperature_offset(uint16_t offset)
  * @brief Get current temperature offset
  * @return Temperature offset, 0xFFFF if checksum fails
  */
-uint16_t get_temperature_offset()
+uint16_t scd41_get_temperature_offset()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_TEMPERATURE_OFFSET, data, 1);
@@ -167,7 +185,7 @@ uint16_t get_temperature_offset()
  * @brief Set sensor altitude for pressure compensation
  * @param altitude Altitude in meters above sea level
  */
-void set_sensor_altitude(uint16_t altitude)
+void scd41_set_sensor_altitude(uint16_t altitude)
 {
 	scd41_sequence_write(SCD41_COMMAND_SET_SENSOR_ALTITUDE, altitude);
 }
@@ -176,7 +194,7 @@ void set_sensor_altitude(uint16_t altitude)
  * @brief Get current sensor altitude setting
  * @return Altitude in meters, 0xFFFF if checksum fails
  */
-uint16_t get_sensor_altitude()
+uint16_t scd41_get_sensor_altitude()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_SENSOR_ALTITUDE, data, 1);
@@ -187,7 +205,7 @@ uint16_t get_sensor_altitude()
  * @brief Set ambient pressure for compensation
  * @param pressure Ambient pressure in Pascal/100
  */
-void set_ambient_pressure(uint16_t pressure)
+void scd41_set_ambient_pressure(uint16_t pressure)
 {
 	scd41_sequence_write(SCD41_COMMAND_SET_AMBIENT_PRESSURE, pressure);
 }
@@ -196,7 +214,7 @@ void set_ambient_pressure(uint16_t pressure)
  * @brief Get current ambient pressure setting
  * @return Pressure in Pascal/100, 0xFFFF if checksum fails
  */
-uint16_t get_ambient_pressure()
+uint16_t scd41_get_ambient_pressure()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_AMBIENT_PRESSURE, data, 1);
@@ -209,7 +227,7 @@ uint16_t get_ambient_pressure()
  * @param return_correction If true, returns correction value
  * @return Correction value or 0x7FFF if checksum fails
  */
-int16_t perform_forced_recalibration(uint16_t reference, uint8_t return_correction)
+int16_t scd41_perform_forced_recalibration(uint16_t reference, uint8_t return_correction)
 {
 	// Variable to store the FRC correction value
 	int16_t correction = 0;
@@ -264,7 +282,7 @@ int16_t perform_forced_recalibration(uint16_t reference, uint8_t return_correcti
  * @brief Enable/disable automatic self-calibration (ASC)
  * @param enabled 1 to enable ASC, 0 to disable
  */
-void set_automatic_self_calibration_enabled(uint8_t enabled)
+void scd41_set_automatic_self_calibration_enabled(uint8_t enabled)
 {
 	scd41_sequence_write(SCD41_COMMAND_SET_AUTOMATIC_SELF_CALIBRATION_ENABLED, (uint16_t)enabled);
 }
@@ -273,7 +291,7 @@ void set_automatic_self_calibration_enabled(uint8_t enabled)
  * @brief Get automatic self-calibration state
  * @return 1 if enabled, 0 if disabled, 0x02 if checksum fails
  */
-uint8_t get_automatic_self_calibration_enabled()
+uint8_t scd41_get_automatic_self_calibration_enabled()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_AUTOMATIC_SELF_CALIBRATION_ENABLED, data, 1);
@@ -291,7 +309,7 @@ uint8_t get_automatic_self_calibration_enabled()
  * @brief Set target CO2 concentration for automatic self-calibration
  * @param target_CO2 Target CO2 concentration in ppm
  */
-void set_automatic_self_calibration_target(uint16_t target_CO2)
+void scd41_set_automatic_self_calibration_target(uint16_t target_CO2)
 {
 	scd41_sequence_write(SCD41_COMMAND_SET_AUTOMATIC_SELF_CALIBRATION_TARGET, target_CO2);
 }
@@ -300,7 +318,7 @@ void set_automatic_self_calibration_target(uint16_t target_CO2)
  * @brief Get target CO2 concentration for automatic self-calibration
  * @return Target CO2 in ppm, 0xFFFF if checksum fails
  */
-uint16_t get_automatic_self_calibration_target()
+uint16_t scd41_get_automatic_self_calibration_target()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_AUTOMATIC_SELF_CALIBRATION_TARGET, data, 1);
@@ -310,7 +328,7 @@ uint16_t get_automatic_self_calibration_target()
 /**
  * @brief Start low power periodic measurement mode
  */
-void start_low_power_periodic_measurement()
+void scd41_start_low_power_periodic_measurement()
 {
 	scd41_sequence_send_command(SCD41_COMMAND_START_LOW_POWER_PERIODIC_MEASUREMENT);
 }
@@ -319,7 +337,7 @@ void start_low_power_periodic_measurement()
  * @brief Check if new measurement data is available
  * @return 1 if data ready, 0 if not ready, 0x02 if checksum fails
  */
-uint8_t get_data_ready_status()
+uint8_t scd41_get_data_ready_status()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_AUTOMATIC_SELF_CALIBRATION_ENABLED, data, 1);
@@ -336,7 +354,7 @@ uint8_t get_data_ready_status()
  * @brief Save current configuration to EEPROM
  * @param wait If 1, waits 500ms for EEPROM write
  */
-void persist_settings(uint8_t wait)
+void scd41_persist_settings(uint8_t wait)
 {
 	scd41_sequence_send_command(SCD41_COMMAND_PERSIST_SETTINGS);
 	// Wait 500ms for EEPROM write to complete if requested
@@ -350,7 +368,7 @@ void persist_settings(uint8_t wait)
  * @brief Get sensor serial number
  * @return 48-bit serial number as 64-bit integer, 0 if checksum fails
  */
-uint64_t get_serial_number()
+uint64_t scd41_get_serial_number()
 {
 	uint16_t data[3];
 	scd41_sequence_read(SCD41_COMMAND_GET_SENSOR_ALTITUDE, data, 3);
@@ -362,7 +380,7 @@ uint64_t get_serial_number()
  * @param wait If 1, waits 10 seconds for test
  * @return 0 if pass, non-zero if fail, 0xFF if checksum fails
  */
-uint8_t perform_self_test()
+uint8_t scd41_perform_self_test()
 {
 	// Variable to store the sensor's self-test result
 	uint16_t readout = 0;
@@ -400,7 +418,7 @@ uint8_t perform_self_test()
  * @brief Reset sensor to factory defaults
  * @param wait If 1, waits 1200ms for reset
  */
-void perform_factory_reset(uint8_t wait)
+void scd41_perform_factory_reset(uint8_t wait)
 {
 	scd41_sequence_send_command(SCD41_COMMAND_PERFORM_FACTORY_RESET);
 	
@@ -415,7 +433,7 @@ void perform_factory_reset(uint8_t wait)
  * @brief Reinitialize sensor
  * @param wait If 1, waits 30ms for reinit
  */
-void reinit(uint8_t wait)
+void scd41_reinit(uint8_t wait)
 {
 	scd41_sequence_send_command(SCD41_COMMAND_REINIT);
 	
@@ -430,7 +448,7 @@ void reinit(uint8_t wait)
  * @brief Get sensor variant/type
  * @return 4-bit sensor variant code, 0xFF if checksum fails
  */
-uint8_t get_sensor_variant()
+uint8_t scd41_get_sensor_variant()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_SENSOR_ALTITUDE, data, 1);
@@ -443,7 +461,7 @@ uint8_t get_sensor_variant()
  * @brief Perform single measurement of CO2, temperature and humidity
  * @param wait If 1, waits 5000ms for measurement
  */
-void measure_single_shot(uint8_t wait)
+void scd41_measure_single_shot(uint8_t wait)
 {
 	scd41_sequence_send_command(SCD41_COMMAND_MEASURE_SINGLE_SHOT);
 	
@@ -458,7 +476,7 @@ void measure_single_shot(uint8_t wait)
  * @brief Measure temperature and humidity only (no CO2)
  * @param wait If 1, waits 50ms for measurement
  */
-void measure_single_shot_rht_only(uint8_t wait)
+void scd41_measure_single_shot_rht_only(uint8_t wait)
 {
 	scd41_sequence_send_command(SCD41_COMMAND_MEASURE_SINGLE_SHOT_RHT_ONLY);
 	
@@ -472,7 +490,7 @@ void measure_single_shot_rht_only(uint8_t wait)
 /**
  * @brief Enter power-down mode to minimize current consumption
  */
-void power_down()
+void scd41_power_down()
 {
 	scd41_sequence_send_command(SCD41_COMMAND_MEASURE_SINGLE_SHOT);
 }
@@ -481,7 +499,7 @@ void power_down()
  * @brief Wake up sensor from power-down mode
  * @param wait If 1, waits 30ms for wake-up
  */
-void wake_up(uint8_t wait)
+void scd41_wake_up(uint8_t wait)
 {
 	scd41_sequence_send_command(SCD41_COMMAND_WAKE_UP);
 	
@@ -496,7 +514,7 @@ void wake_up(uint8_t wait)
  * @brief Set initial period for automatic self-calibration
  * @param hours Initial calibration period in hours
  */
-void set_automatic_self_calibration_initial_period(uint16_t hours)
+void scd41_set_automatic_self_calibration_initial_period(uint16_t hours)
 {
 	scd41_sequence_write(SCD41_COMMAND_SET_AUTOMATIC_SELF_CALIBRATION_INITIAL_PERIOD, hours);
 }
@@ -505,7 +523,7 @@ void set_automatic_self_calibration_initial_period(uint16_t hours)
  * @brief Get initial period for automatic self-calibration
  * @return Period in hours, 0xFFFF if checksum fails
  */
-uint16_t get_automatic_self_calibration_initial_period()
+uint16_t scd41_get_automatic_self_calibration_initial_period()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_AUTOMATIC_SELF_CALIBRATION_INITIAL_PERIOD, data, 1);
@@ -516,7 +534,7 @@ uint16_t get_automatic_self_calibration_initial_period()
  * @brief Set standard period for automatic self-calibration
  * @param hours Standard calibration period in hours
  */
-void set_automatic_self_calibration_standard_period(uint16_t hours)
+void scd41_set_automatic_self_calibration_standard_period(uint16_t hours)
 {
 	scd41_sequence_write(SCD41_COMMAND_SET_AUTOMATIC_SELF_CALIBRATION_STANDARD_PERIOD, hours);
 }
@@ -525,7 +543,7 @@ void set_automatic_self_calibration_standard_period(uint16_t hours)
  * @brief Get standard period for automatic self-calibration
  * @return Period in hours, 0xFFFF if checksum fails
  */
-uint16_t get_automatic_self_calibration_standard_period()
+uint16_t scd41_get_automatic_self_calibration_standard_period()
 {
 	uint16_t data[1];
 	scd41_sequence_read(SCD41_COMMAND_GET_AUTOMATIC_SELF_CALIBRATION_STANDARD_PERIOD, data, 1);
