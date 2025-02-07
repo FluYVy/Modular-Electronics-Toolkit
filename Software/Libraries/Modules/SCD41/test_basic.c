@@ -17,26 +17,16 @@ int main(void)
 {
 	i2c_master_init(400000);
 	DDRC = 0xff;
-	start_periodic_measurement();
+	scd41_start_periodic_measurement();
 	
     while (1) 
     {
-		read_measurement();
+		scd41_read_measurement();
 		
-		PORTC = get_co2()>>8;
-		_delay_ms(1000)
-		PORTC = get_co2();
-		_delay_ms(1000)
-		
-		PORTC = get_temperature()>>8;
-		_delay_ms(1000)
-		PORTC = get_temperature();
-		_delay_ms(1000)
-		
-		PORTC = get_humidity()>>8;
-		_delay_ms(1000)
-		PORTC = get_humidity();
-		_delay_ms(1000)
+		PORTC = scd41_get_co2()>>8;
+		_delay_ms(1000);
+		PORTC = scd41_get_co2();
+		_delay_ms(1000);
     }
 }
 

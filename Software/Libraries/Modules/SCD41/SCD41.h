@@ -376,21 +376,41 @@ uint16_t scd41_get_co2();
  * @brief Get last measured temperature
  * Gets the last measured temperature in degrees C.
  * 
- * @return uint16_t temperature value in degrees C
+ * @return float temperature value in degrees C
  * @note This does not get the current measurement from the sensor. Use `read_measurement()` to get the most recent data.
  * @ingroup BasicCommands
 */
 float scd41_get_temperature();
 
 /**
+ * @brief Get last raw measured temperature
+ * Gets the last measured temperature as an uint16 integer.
+ * 
+ * @return uint16_t temperature value
+ * @note This does not get the current measurement from the sensor. Use `read_measurement()` to get the most recent data.
+ * @ingroup BasicCommands
+*/
+uint16_t scd41_get_temperature_raw();
+
+/**
  * @brief Get last measured humidity
  * Gets the last measured humidity in percent.
  * 
- * @return uint16_t relativ humidity value in percent.
+ * @return float relativ humidity value in percent.
  * @note This does not get the current measurement from the sensor. Use `read_measurement()` to get the most recent data.
  * @ingroup BasicCommands
 */
 float scd41_get_humidity();
+
+/**
+ * @brief Get last raw measured humidity
+ * Gets the last measured humidity as an uint16 integer.
+ * 
+ * @return uint16_t humidity value
+ * @note This does not get the current measurement from the sensor. Use `read_measurement()` to get the most recent data.
+ * @ingroup BasicCommands
+*/
+uint16_t scd41_get_humidity_raw();
 
 /**
  * @brief Start periodic measurement mode
@@ -400,7 +420,7 @@ float scd41_get_humidity();
  * 
  * @ingroup BasicCommands
 */
-void start_periodic_measurement();
+void scd41_start_periodic_measurement();
 
 /**
 * @brief Read latest measurement from sensor
@@ -408,7 +428,7 @@ void start_periodic_measurement();
 * @note This function will not return the data.
 * @ingroup BasicCommands
 */
-void read_measurement();
+void scd41_read_measurement();
 
 /**
 * @brief Stop periodic measurement mode
@@ -418,7 +438,7 @@ void read_measurement();
 * @param wait If true, waits 500ms for command completion.
 * @ingroup BasicCommands
 */
-void stop_periodic_measurement(uint8_t wait);
+void scd41_stop_periodic_measurement(uint8_t wait);
 
 
 /**
@@ -432,7 +452,7 @@ void stop_periodic_measurement(uint8_t wait);
 * @param offset Temperature offset value
 * @ingroup SignalCompensation
 */
-void set_temperature_offset(uint16_t offset);
+void scd41_set_temperature_offset(uint16_t offset);
 
 /**
 * @brief Get temperature offset
@@ -440,7 +460,7 @@ void set_temperature_offset(uint16_t offset);
 * @return uint16_t Current temperature offset
 * @ingroup SignalCompensation
 */
-uint16_t get_temperature_offset();
+uint16_t scd41_get_temperature_offset();
 
 /**
 * @brief Set sensor altitude
@@ -448,7 +468,7 @@ uint16_t get_temperature_offset();
 * @param altitude Altitude in meters
 * @ingroup SignalCompensation
 */
-void set_sensor_altitude(uint16_t altitude);
+void scd41_set_sensor_altitude(uint16_t altitude);
 
 /**
 * @brief Get sensor altitude
@@ -456,7 +476,7 @@ void set_sensor_altitude(uint16_t altitude);
 * @return Current altitude in meters
 * @ingroup SignalCompensation
 */
-uint16_t get_sensor_altitude();
+uint16_t scd41_get_sensor_altitude();
 
 /**
 * @brief Set ambient pressure
@@ -464,7 +484,7 @@ uint16_t get_sensor_altitude();
 * @param pressure Ambient pressure value in hPa
 * @ingroup SignalCompensation
 */
-void set_ambient_pressure(uint16_t pressure);
+void scd41_set_ambient_pressure(uint16_t pressure);
 
 /**
 * @brief Get ambient pressure
@@ -472,7 +492,7 @@ void set_ambient_pressure(uint16_t pressure);
 * @return Current ambient pressure in hPa
 * @ingroup SignalCompensation
 */
-uint16_t get_ambient_pressure();
+uint16_t scd41_get_ambient_pressure();
 
 
 /**
@@ -488,35 +508,35 @@ uint16_t get_ambient_pressure();
 * @return Correction value or 0xFFFF if checksum fails
 * @ingroup FieldCalibration
 */
-int16_t perform_forced_recalibration(uint16_t reference, uint8_t return_correction);
+int16_t scd41_perform_forced_recalibration(uint16_t reference, uint8_t return_correction);
 
 /**
 * @brief Enable or disable automatic self-calibration (ASC)
 * @param enabled 1 to enable ASC, 0 to disable
 * @ingroup FieldCalibrationv
 */
-void set_automatic_self_calibration_enabled(uint8_t enabled);
+void scd41_set_automatic_self_calibration_enabled(uint8_t enabled);
 
 /**
 * @brief Get automatic self-calibration state
 * @return 0 if disabled, 1 if enabled, 2 if checksum fails
 * @ingroup FieldCalibration
 */
-uint8_t get_automatic_self_calibration_enabled();
+uint8_t scd41_get_automatic_self_calibration_enabled();
 
 /**
 * @brief Set target CO2 concentration for automatic self-calibration
 * @param target_CO2 Target CO2 concentration in ppm
 * @ingroup FieldCalibration
 */
-void set_automatic_self_calibration_target(uint16_t target_CO2);
+void scd41_set_automatic_self_calibration_target(uint16_t target_CO2);
 
 /**
 * @brief Get target CO2 concentration for automatic self-calibration
 * @return Target CO2 in ppm, 0xFFFF if checksum fails
 * @ingroup FieldCalibration
 */
-uint16_t get_automatic_self_calibration_target();
+uint16_t scd41_get_automatic_self_calibration_target();
 
 
 /**
@@ -529,14 +549,14 @@ uint16_t get_automatic_self_calibration_target();
 * @note To stop the measurements use the function `stop_periodic_measurement()`.
 * @ingroup LowPower
 */
-void start_low_power_periodic_measurement();
+void scd41_start_low_power_periodic_measurement();
 
 /**
 * @brief Check if new measurement data is available
 * @return 0 if data is not ready, 1 if ready, 2 if checksum fails
 * @ingroup LowPower
 */
-uint8_t get_data_ready_status();
+uint8_t scd41_get_data_ready_status();
 
 
 /**
@@ -549,14 +569,14 @@ uint8_t get_data_ready_status();
 * @param wait If 1, waits 500ms for EEPROM write, else you need to handle it yourself.
 * @ingroup AdvancedFeatures
 */
-void persist_settings(uint8_t wait);
+void scd41_persist_settings(uint8_t wait);
 
 /**
 * @brief Get sensor serial number
 * @return 48-bit serial number as 64-bit integer, 0 if checksum fails
 * @ingroup AdvancedFeatures
 */
-uint64_t get_serial_number();
+uint64_t scd41_get_serial_number();
 
 /**
 * @brief Perform sensor self-test
@@ -570,14 +590,14 @@ uint8_t perform_self_test();
 * @param wait If 1, waits for reset completion
 * @ingroup AdvancedFeatures
 */
-void perform_factory_reset(uint8_t wait);
+void scd41_perform_factory_reset(uint8_t wait);
 
 /**
 * @brief Reinitialize sensor
 * @param wait If 1, waits for reinit completion
 * @ingroup AdvancedFeatures
 */
-void reinit(uint8_t wait);
+void scd41_reinit(uint8_t wait);
 
 /**
 * @brief Get sensor variant
@@ -586,7 +606,7 @@ void reinit(uint8_t wait);
 *         0001: SCD41
 * @ingroup AdvancedFeatures
 */
-uint8_t get_sensor_variant();
+uint8_t scd41_get_sensor_variant();
 
 
 /**
@@ -599,21 +619,21 @@ uint8_t get_sensor_variant();
 * @param wait If 1, waits 5000ms for measurement
 * @ingroup SingleShot
 */
-void measure_single_shot(uint8_t wait);
+void scd41_measure_single_shot(uint8_t wait);
 
 /**
 * @brief Measure temperature and humidity only (no CO2)
 * @param wait If 1, waits 50ms for measurement
 * @ingroup SingleShot
 */
-void measure_single_shot_rht_only(uint8_t wait);
+void scd41_measure_single_shot_rht_only(uint8_t wait);
 
 /**
 * @brief Enter power-down mode
 * Enter power-down mode to minimize current consumption
 * @ingroup SingleShot
 */
-void power_down();
+void scd41_power_down();
 
 /**
 * @brief Wake up sensor
@@ -621,34 +641,34 @@ void power_down();
 * @param wait If 1, waits 30ms for wake-up
 * @ingroup SingleShot
 */
-void wake_up(uint8_t wait);
+void scd41_wake_up(uint8_t wait);
 
 /**
 * @brief Set initial period for automatic self-calibration
 * @param hours Initial calibration period in hours
 * @ingroup SingleShot
 */
-void set_automatic_self_calibration_initial_period(uint16_t hours);
+void scd41_set_automatic_self_calibration_initial_period(uint16_t hours);
 
 /**
 * @brief Get initial period for automatic self-calibration
 * @return Initial period in hours
 * @ingroup SingleShot
 */
-uint16_t get_automatic_self_calibration_initial_period();
+uint16_t scd41_get_automatic_self_calibration_initial_period();
 
 /**
 * @brief Set standard period for automatic self-calibration
 * @param hours Standard calibration period in hours
 * @ingroup SingleShot
 */
-void set_automatic_self_calibration_standard_period(uint16_t hours);
+void scd41_set_automatic_self_calibration_standard_period(uint16_t hours);
 
 /**
 * @brief Get standard period for automatic self-calibration
 * @return Standard period in hours
 * @ingroup SingleShot
 */
-uint16_t get_automatic_self_calibration_standard_period();
+uint16_t scd41_get_automatic_self_calibration_standard_period();
 
 #endif /* SCD41_H_ */
