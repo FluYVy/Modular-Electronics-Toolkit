@@ -240,7 +240,7 @@ void max7221_print_int16_default(int16_t value);
  * @param value The number to print
  * @param decimal The number of decimal places to display
  */
-void max7221_print_float(float value, uint8_t decimal);
+void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t length);
 
 /**  
  * @brief Sets the display brightness  
@@ -251,5 +251,7 @@ void max7221_print_float(float value, uint8_t decimal);
  * @note Values outside 1-16 will be clamped to this range  
  */  
 void max7221_set_brightness(uint8_t brightness);
+
+void max7221_print_segments(uint8_t value, uint8_t digit);
 
 #endif /* MAX7221_H_ */

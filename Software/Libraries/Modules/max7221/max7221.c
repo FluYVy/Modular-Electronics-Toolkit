@@ -118,11 +118,7 @@ void max7221_set_digit(uint8_t digit, uint8_t value)
 {
 	if (device_set)
 	{
-		if (digit < 0)
-		{
-			digit_set = 5;
-		}
-		else if (digit > 7)
+		if (digit > 7)
 		{
 			digit_set = 4;
 		}
@@ -144,11 +140,7 @@ void max7221_set_digit_dp(uint8_t digit, uint8_t value)
 {
 	if (device_set)
 	{
-		if (digit < 0)
-		{
-			digit_set = 5;
-		}
-		else if (digit > 7)
+		if (digit > 7)
 		{
 			digit_set = 4;
 		}
@@ -170,11 +162,7 @@ void max7221_clear_digit(uint8_t digit)
 {
 	if (device_set)
 	{
-		if (digit < 0)
-		{
-			digit_set = 5;
-		}
-		else if (digit > 7)
+		if (digit > 7)
 		{
 			digit_set = 4;
 		}
@@ -210,11 +198,7 @@ void max7221_print_uint8(uint8_t value, uint8_t digit)
 		digit = digit + 2;
 		for (uint8_t i = 0; i < 3; i++)
 		{
-			if (digit < 0)
-			{
-				digit_set = 5;
-			}
-			else if (digit > 7)
+			if (digit > 7)
 			{
 				digit_set = 4;
 			}
@@ -248,11 +232,7 @@ void max7221_print_int8(int8_t value, uint8_t digit)
 		
 		for (uint8_t i = 0; i < 4; i++)
 		{
-			if (digit < 0)
-			{
-				digit_set = 5;
-			}
-			else if (digit > 7)
+			if (digit > 7)
 			{
 				digit_set = 4;
 			}
@@ -298,11 +278,7 @@ void max7221_print_uint16(uint16_t value, uint8_t digit)
 		digit = digit + 4;
 		for (uint8_t i = 0; i < 5; i++)
 		{
-			if (digit < 0)
-			{
-				digit_set = 5;
-			}
-			else if (digit > 7)
+			if (digit > 7)
 			{
 				digit_set = 4;
 			}
@@ -327,7 +303,7 @@ void max7221_print_uint16_default(uint16_t value) {
 }
 
 
-// working version with 0's
+// working version with 0's instead of blank
 /*void max7221_print_int16_length(int16_t value, uint8_t digit, uint8_t length)
 {
     if (device_set)
@@ -362,11 +338,7 @@ void max7221_print_uint16_default(uint16_t value) {
 		{
 			
 			
-			if (digit < 0)
-			{
-				digit_set = 5;
-			}
-			else if (digit > 7)
+			if (digit > 7)
 			{
 				digit_set = 4;
 			}
@@ -408,13 +380,12 @@ void max7221_print_int16_length(int16_t value, uint8_t digit, uint8_t length)
 		uint8_t negative = 0;
 		uint8_t del_digit = 0;
 		
-		// make length work with code (because of hyphen length has to be decreased for actual digit number)
-		length--;
 		
-		// maximum length for 16bit = 65535 = (5 + hyphen) = 6, because of length-- it is 5
-		if (length > 5)
+		
+		// maximum length for 16bit = 65535 = (5 + hyphen) = 6
+		if (length > 6)
 		{
-			length = 5;
+			length = 6;
 		}
 		// minimum length = 1
 		else if (length < 1)
@@ -429,7 +400,7 @@ void max7221_print_int16_length(int16_t value, uint8_t digit, uint8_t length)
 			negative = 1;
 			
 			// check if the number displayed needs all defined digits and if not, delete rightmost digit (using del_digit = 1)
-			while (value < (int)pow(10, (length-1)) && length >= 2)
+			while (value < (int)pow(10, (length-2)) && length >= 3)
 			{
 				length--;
 				del_digit = 1;
@@ -439,25 +410,24 @@ void max7221_print_int16_length(int16_t value, uint8_t digit, uint8_t length)
 		else
 		{
 			// check if the number displayed needs all defined digits and if not, delete rightmost digit (using del_digit = 1)
-			while (value < (int)pow(10, length) && length >= 1)
+			// Checking for 10^5 would exceed the maixmum int_16 length
+			length--;
+			while (value < (int)pow(10, length-1) && length >= 2)
 			{
 				length--;
 				del_digit = 1;
 			}
 		}
 		
-		// new rightmost digit (using shortened length) + 1
-		digit = digit + length + 1;
+		// new rightmost digit (using shortened length) - 1 (because first digit is 0 and not 1)
+		digit = digit + length - 1;
 		
 		// if rightmost digit needs to be deleted
 		if (del_digit == 1)
 		{
+			digit += 1;
 			// link digit 0-7 to actual address
-			if (digit < 0)
-			{
-				digit_set = 5;
-			}
-			else if (digit > 7)
+			if (digit > 7)
 			{
 				digit_set = 4;
 			}
@@ -473,22 +443,18 @@ void max7221_print_int16_length(int16_t value, uint8_t digit, uint8_t length)
 			// delete digit
 			max7221_transfer((uint16_t)((digit_set << 8) | MAX7221_DISPLAY_BLANK));
 			del_digit = 0;
+			digit -= 1;
 			
 		}
 		
-		// calculate rightmost digit
-		digit = digit - 1;
+		
 		
 		// for every digit the number has to be displayed on
-		for (uint8_t i = 0; i < (length+1); i++)
+		for (uint8_t i = 0; i < (length); i++)
 		{
 			
 			// link digit 0-7 to actual address
-			if (digit < 0)
-			{
-				digit_set = 5;
-			}
-			else if (digit > 7)
+			if (digit > 7)
 			{
 				digit_set = 4;
 			}
@@ -503,7 +469,7 @@ void max7221_print_int16_length(int16_t value, uint8_t digit, uint8_t length)
 			
 			
 			// if not at leftmost digit
-			if (i < length)
+			if (i < length - 1)
 			{
 				max7221_transfer((uint16_t)((digit_set << 8) | ((value % 10) & 0x0F)));
 				value = value / 10;
@@ -524,122 +490,7 @@ void max7221_print_int16_length(int16_t value, uint8_t digit, uint8_t length)
     }
 }
 
-// o3 mini high (works)
-/*void max7221_print_int16_length(int16_t value, uint8_t start_digit, uint8_t total_positions)  
-{  
-    if (device_set)  
-    {  
-		
-        // Constrain total_positions to available segments (0..7)  
-        if (total_positions > 8)  
-            total_positions = 8;  
-        if (total_positions == 0)  
-            return;  // nothing to do  
-  
-        uint8_t is_negative = 0;  
-        uint16_t absVal;  
-        if (value < 0)  
-        {  
-            is_negative = 1;  
-            absVal = (uint16_t)(-value);  
-        }  
-        else  
-        {  
-            absVal = (uint16_t)value;  
-        }  
-  
-        // Determine the number of digits needed to represent absVal  
-        uint8_t numDigits = 0;  
-        uint16_t temp = absVal;  
-        if (temp == 0)   
-        {  
-            numDigits = 1;  
-        }  
-        else  
-        {  
-            while (temp > 0)  
-            {  
-                numDigits++;  
-                temp /= 10;  
-            }  
-        }  
-  
-        // Total characters we want to show:  
-        // if negative, we want a leading hyphen plus the digits.  
-        uint8_t total_chars = numDigits + (is_negative ? 1 : 0);  
-  
-        // If the number does not fill all available positions, we’ll blank the remaining ones.  
-        // Also if total_chars > total_positions, we only show the most significant total_positions.  
-        if (total_chars > total_positions)  
-        {  
-            // In a negative number if there isn’t room for the sign then drop it.  
-            if (is_negative && numDigits >= total_positions)  
-            {  
-                is_negative = 0;  
-                total_chars = numDigits;  
-            }  
-            else  
-            {  
-                total_chars = total_positions;  
-            }  
-        }  
-  
 
-        uint8_t display[8];  // maximum 8 segments available  
-        uint8_t pos = 0;  
-          
-        if (is_negative)  
-        {  
-            display[pos++] = MAX7221_DISPLAY_HYPHEN;  
-        }  
-  
-        // Prepare to extract the digits starting with the most significant.  
-        // Compute appropriate power-of-10 divisor.  
-        uint16_t divisor = 1;  
-        for (uint8_t i = 1; i < numDigits; i++)  
-        {  
-            divisor *= 10;  
-        }  
-        for (uint8_t i = 0; i < numDigits && pos < total_chars; i++)  
-        {  
-            uint8_t d = (absVal / divisor) % 10;  
-            display[pos++] = d;  
-            divisor /= 10;  
-        }  
-        // If there are still positions left, fill them with the blank character.  
-        while (pos < total_positions)  
-        {  
-            display[pos++] = MAX7221_DISPLAY_BLANK;  
-        }  
-  
-        // Now send the full display array to the MAX7221 left-to-right.  
-        // (Remember: segment 0 is leftmost and 7 is rightmost)  
-        for (uint8_t i = 0; i < total_positions; i++)  
-        {  
-            uint8_t mapped;  
-            uint8_t physical_digit = start_digit + i;  
-            // --- Mapping logic (assumed to work) ---  
-            if (physical_digit < 0)  
-            {  
-                mapped = 5;  
-            }  
-            else if (physical_digit > 7)  
-            {  
-                mapped = 4;  
-            }  
-            else if (physical_digit <= 3)  
-            {  
-                mapped = ((physical_digit + 5) & 0x0F);  
-            }  
-            else  
-            {  
-                mapped = ((physical_digit - 3) & 0x0F);  
-            }  
-            // ------------------------------------------  
-            max7221_transfer((uint16_t)((mapped << 8) | (display[i] & 0x0F)));  
-        }  
-    }  
-}*/
 
 void max7221_print_int16_default(int16_t value) {
 	max7221_print_int16_length(value, 0, 5);
@@ -656,8 +507,8 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
     if (device_set)
 	{
         uint8_t negative = 0;
-        uint8_t digits[7] = {0, 0 , 0, 0, 0, 0, 0};
-        uint8_t digitCount = 0;
+		uint8_t numtype = 0;
+		uint8_t numlength = 0;
 
         if (value < 0)
         {
@@ -676,30 +527,29 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 		// 493.52 or 0.05245*/
 		while (value >= 10)
 		{
-			value /= 10;
+			value /= 10.0f;
 			decimal += 1;
 		}
-		while (value < 1)
+		while (value < 1 && value != 0)
 		{
-			value *= 10;
+			value *= 10.0f;
 			decimal -= 1;
 		}
 		// number between 1-9.99999 (e.g. 3.5256)
 		
 
-        uint32_t new_value = (uint32_t)(value);
+        //uint32_t new_value = (uint32_t)(value);
 		
 		
 		/////////////////////////////////
-		uint8_t del_digit = 0;
+		//uint8_t del_digit = 0;
 		
-		// make length work with code (because of hyphen, length has to be decreased for actual digit number)
-		length--;
 		
-		// maximum length of 7-segment display = (7 + hyphen) = 8, because of length-- it is 7
-		if (length > 7)
+		
+		// maximum length of 7-segment display = (7 + hyphen) = 8
+		if (length > 8)
 		{
-			length = 7;
+			length = 8;
 		}
 		// minimum length = 3
 		else if (length < 3)
@@ -711,60 +561,66 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 		
 		
 		
-		// if negative value, convert to positive value and set negative = 1
-		if (value < 0)
-		{
-			value = -value;
-			negative = 1;
-				
-			// check if the number displayed needs all defined digits and if not, delete rightmost digit (using del_digit = 1)
-			while (value < (int)pow(10, (length-1)) && length >= 2)
-			{
-				length--;
-				del_digit = 1;
-			}
-		}
-		// if positive value
-		else
-		{
-			// check if the number displayed needs all defined digits and if not, delete rightmost digit (using del_digit = 1)
-			while (value < (int)pow(10, length) && length >= 1)
-			{
-				length--;
-				del_digit = 1;
-			}
-		}
+		
+		
+		
+		// new rightmost digit
+		digit = digit + length - 1;
+		
 		
 		if (decimal >= 10 && (((length >= 5) && negative) || ((length >= 4) && !negative)))
 		{
-			length = length - 3;
+			//length -= 3;
+			numtype = 1;
+			numlength = 3;
 		}
-		else if (decimal > 0)
+		else if (decimal > 0 && (((length >= 4) && negative) || ((length >= 3) && !negative)))
 		{
-			
+			//length -= 2;
+			numtype = 2;
+			numlength = 2;
 		}
-		else if (decimal <= -10)
+		else if (decimal <= -10 && (((length >= 6) && negative) || ((length >= 5) && !negative)))
 		{
-			
+			//length -= 4;
+			numtype = 3;
+			numlength = 4;
+			decimal = -decimal;
 		}
-		else if (decimal < 0)
+		else if (decimal < 0 && (((length >= 5) && negative) || ((length >= 4) && !negative)))
 		{
-			
+			//length -= 3;
+			numtype = 4;
+			numlength = 3;
+			decimal = -decimal;
+		}
+		else if (decimal == 0 && (((length >= 4) && negative) || ((length >= 3) && !negative)))
+		{
+			// for displaying E0
+			//length -= 2;
+			numtype = 5;
+			numlength = 2;
+		}
+		else
+		{
+			// display "ERR"
+			length = 0;
+			numtype = 6;
+			numlength = 0;
 		}
 		
 		
-		// new rightmost digit (using shortened length) + 1
-		digit = digit + length + 1;
 		
-		// if rightmost digit needs to be deleted
+		
+		
+		
+		
+		/*// if rightmost digit needs to be deleted
 		if (del_digit == 1)
 		{
+			digit += 1;
 			// link digit 0-7 to actual address
-			if (digit < 0)
-			{
-				digit_set = 5;
-			}
-			else if (digit > 7)
+			if (digit > 7)
 			{
 				digit_set = 4;
 			}
@@ -780,22 +636,19 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 			// delete digit
 			max7221_transfer((uint16_t)((digit_set << 8) | MAX7221_DISPLAY_BLANK));
 			del_digit = 0;
+			digit -= 1;
 			
-		}
+		}*/
 		
-		// calculate rightmost digit
-		digit = digit - 1;
+		
+		
 		
 		// for every digit the number has to be displayed on
-		for (uint8_t i = 0; i < (length+1); i++)
+		for (uint8_t i = 0; i < length; i++)
 		{
 			
 			// link digit 0-7 to actual address
-			if (digit < 0)
-			{
-				digit_set = 5;
-			}
-			else if (digit > 7)
+			if (digit > 7)
 			{
 				digit_set = 4;
 			}
@@ -809,12 +662,166 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 			}
 			
 			
-			// if not at leftmost digit
-			if (i < length)
+			
+			if (i < numlength)
 			{
-				max7221_transfer((uint16_t)((digit_set << 8) | ((value % 10) & 0x0F)));
-				value = value / 10;
-				digit--;
+				switch (numtype)
+				{
+					case 0:
+						if (i == 0)
+						{
+							// display R
+							max7221_print_segments(0b01000110, digit_set);
+						}
+						else if (i == 1)
+						{
+							// display R
+							max7221_print_segments(0b01000110, digit_set);
+						}
+						else
+						{
+							// display E
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+						}
+						break;
+					case 1:
+						if (i <= 1)
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | ((decimal % 10) & 0x0F)));
+							decimal /= 10;
+						}
+						else
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+						}
+						break;
+					case 2:
+						if (i < 1)
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | ((decimal % 10) & 0x0F)));
+							decimal /= 10;
+						}
+						else
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+						}
+						break;
+					case 3:
+						if (i <= 1)
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | ((decimal % 10) & 0x0F)));
+							decimal /= 10;
+						}
+						if (i == 2)
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_HYPHEN)));
+						}
+						else
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+						}
+						break;
+					case 4:
+						if (i < 1)
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | ((decimal % 10) & 0x0F)));
+							decimal /= 10;
+						}
+						if (i == 1)
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_HYPHEN)));
+						}
+						else
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+						}
+						break;
+					case 5:
+						if (i < 1)
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | 0x00));
+						}
+						else
+						{
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+						}
+						break;
+					case 6:
+						if (i == 0)
+						{
+							// display R
+							max7221_print_segments(0b01000110, digit_set);
+						}
+						else if (i == 1)
+						{
+							// display R
+							max7221_print_segments(0b01000110, digit_set);
+						}
+						else
+						{
+							// display E
+							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+						}
+						break;
+					default:
+						break;
+				}
+			}
+			// convert to int8_t so the value doesn't go to 255 if lower than 0
+			else if ((int8_t)(i) < (int8_t)(length) - 5)
+			{
+				if (negative == 1)
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*10000.0f)) % 10) & 0x0F)));
+				}
+				else
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*100000.0f)) % 10) & 0x0F)));
+				}
+			}
+			else if ((int8_t)(i) < (int8_t)(length) - 4)
+			{
+				if (negative == 1)
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*1000.0f)) % 10) & 0x0F)));
+				}
+				else
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*10000.0f)) % 10) & 0x0F)));
+				}
+			}
+			else if ((int8_t)(i) < (int8_t)(length) - 3)
+			{
+				if (negative == 1)
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*100.0f)) % 10) & 0x0F)));
+				}
+				else
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*1000.0f)) % 10) & 0x0F)));
+				}
+			}
+			else if ((int8_t)(i) < (int8_t)(length) - 2)
+			{
+				if (negative == 1)
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*10.0f)) % 10) & 0x0F)));
+				}
+				else
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*100.0f)) % 10) & 0x0F)));
+				}
+			}
+			else if ((int8_t)(i) < (int8_t)(length) - 1)
+			{
+				if (negative == 1)
+				{
+					max7221_set_digit_dp(digit, (((uint32_t)(value) % 10) & 0x0F));
+				}
+				else
+				{
+					max7221_transfer((uint16_t)((digit_set << 8) | ((((uint32_t)(value*10.0f)) % 10) & 0x0F)));
+				}
 			}
 			// for negative number display hyphen
 			else if (negative == 1)
@@ -825,14 +832,19 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 			// for positive number display number instead of hyphen
 			else
 			{
-				max7221_transfer((uint16_t)((digit_set << 8) | ((value % 10) & 0x0F)));
+				max7221_set_digit_dp(digit, (((uint32_t)(value) % 10) & 0x0F));
 			}
+			if (digit > 0)
+			{
+				digit--;
+			}
+			
 		}
 		///////////////////////////////////////
 		
 		
 
-        while (new_value > 0 && digitCount < 6)
+        /*while (new_value > 0 && digitCount < 6)
         {
             digits[digitCount++] = new_value % 10;
             new_value /= 10;
@@ -860,7 +872,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
         for (uint8_t i = 0; i < 7; i++)
         {
             max7221_set_digit_dp(7-i, digits[i], (decimal == i));
-        }
+        }*/
     }
 }
 
@@ -879,6 +891,30 @@ void max7221_set_brightness(uint8_t brightness)
 	uint8_t intensity = brightness - 1;
 	
 	max7221_transfer((uint16_t)((MAX7221_REG_INTENSITY << 8) | (intensity & 0x0F)));
+}
+
+void max7221_print_segments(uint8_t value, uint8_t digit)
+{
+	uint8_t digit_set = 0;
+	//value = 0b dp,a,b,c,d,e,f,g
+	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_NO_DECODE));
+	
+	// link digit 0-7 to actual address
+	if (digit > 7)
+	{
+		digit_set = 4;
+	}
+	else if (digit <= 3)
+	{
+		digit_set = ((digit + 5) & 0x0F);
+	}
+	else
+	{
+		digit_set = ((digit - 3) & 0x0F);
+	}
+	
+	max7221_transfer((uint16_t)((digit_set << 8) | value));
+	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_DECODE_ALL));
 }
 
 // TODO:
