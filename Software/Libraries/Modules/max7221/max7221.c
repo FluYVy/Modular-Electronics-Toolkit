@@ -10,10 +10,13 @@
 #include <util/delay.h>
 #include <math.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
 
 SpiDevice *max7221_device;
 uint8_t device_set = 0;
 uint8_t digit_set = 0x00;
+bool decode_mode[8] = { false };
 
 #define CS_ACTIVE (*(max7221_device->cs_port) &= ~(1 << max7221_device->cs_pin))
 #define CS_INACTIVE (*(max7221_device->cs_port) |= (1 << max7221_device->cs_pin))
@@ -94,6 +97,10 @@ void max7221_start(SpiDevice *device, uint8_t prescaler)
 	max7221_transfer((uint16_t)((MAX7221_REG_SHUTDOWN << 8) | MAX7221_SHUTDOWN_MODE));
 	max7221_transfer((uint16_t)((MAX7221_REG_SCAN_LIMIT << 8) | MAX7221_SCAN_LIMIT_7));
 	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_DECODE_ALL));
+	for (int i = 0; i < 8; i++)
+	{
+		decode_mode[i] = true;
+	}
 	max7221_transfer((uint16_t)((MAX7221_REG_DISPLAY_TEST << 8) | MAX7221_DISPLAY_TEST_OFF));
 	max7221_transfer((uint16_t)((MAX7221_REG_SHUTDOWN << 8) | MAX7221_NORMAL_OPERATION));
 	max7221_set_brightness(6);
@@ -515,16 +522,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
             negative = 1;
             value = -value;
         }
-
-        /*for(uint8_t i = 0; i < decimal; i++)
-        {
-            value = value * 10.0f;
-        }
-		for(uint8_t i = 0; i < -decimal; i++)
-		{
-			value = value / 10.0f;
-		}
-		// 493.52 or 0.05245*/
+		
 		while (value >= 10)
 		{
 			value /= 10.0f;
@@ -537,15 +535,6 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 		}
 		// number between 1-9.99999 (e.g. 3.5256)
 		
-
-        //uint32_t new_value = (uint32_t)(value);
-		
-		
-		/////////////////////////////////
-		//uint8_t del_digit = 0;
-		
-		
-		
 		// maximum length of 7-segment display = (7 + hyphen) = 8
 		if (length > 8)
 		{
@@ -557,17 +546,10 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 			length = 3;
 		}
 		
-		
-		
-		
-		
-		
-		
-		
 		// new rightmost digit
 		digit = digit + length - 1;
 		
-		
+		//if (0){}	// for testing purposes
 		if (decimal >= 10 && (((length >= 5) && negative) || ((length >= 4) && !negative)))
 		{
 			//length -= 3;
@@ -604,44 +586,11 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 		else
 		{
 			// display "ERR"
-			length = 0;
+			digit = digit - length + 1 + 2;
+			length = 3;
 			numtype = 6;
-			numlength = 0;
+			numlength = 3;
 		}
-		
-		
-		
-		
-		
-		
-		
-		/*// if rightmost digit needs to be deleted
-		if (del_digit == 1)
-		{
-			digit += 1;
-			// link digit 0-7 to actual address
-			if (digit > 7)
-			{
-				digit_set = 4;
-			}
-			else if (digit <= 3)
-			{
-				digit_set = ((digit + 5) & 0x0F);
-			}
-			else
-			{
-				digit_set = ((digit - 3) & 0x0F);
-			}
-			
-			// delete digit
-			max7221_transfer((uint16_t)((digit_set << 8) | MAX7221_DISPLAY_BLANK));
-			del_digit = 0;
-			digit -= 1;
-			
-		}*/
-		
-		
-		
 		
 		// for every digit the number has to be displayed on
 		for (uint8_t i = 0; i < length; i++)
@@ -661,27 +610,54 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 				digit_set = ((digit - 3) & 0x0F);
 			}
 			
-			
-			
 			if (i < numlength)
 			{
 				switch (numtype)
 				{
 					case 0:
+						// display "ERR" for error
 						if (i == 0)
 						{
-							// display R
-							max7221_print_segments(0b01000110, digit_set);
+							if (decode_mode[digit] == true)
+							{
+								max7221_set_no_decode();
+								// display R
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
+							}
+							else
+							{
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
+							}
+							
 						}
 						else if (i == 1)
 						{
-							// display R
-							max7221_print_segments(0b01000110, digit_set);
+							if (decode_mode[digit] == true)
+							{
+								max7221_set_no_decode();
+								// display R
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
+							}
+							else
+							{
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
+							}
+							
 						}
 						else
 						{
-							// display E
-							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+							if (decode_mode[digit] == true)
+							{
+								max7221_set_no_decode();
+								// display E
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01001111));
+							}
+							else
+							{
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01001111));
+							}
+							_delay_ms(1000);
+							max7221_set_all_decode();
 						}
 						break;
 					case 1:
@@ -712,7 +688,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 							max7221_transfer((uint16_t)((digit_set << 8) | ((decimal % 10) & 0x0F)));
 							decimal /= 10;
 						}
-						if (i == 2)
+						else if (i == 2)
 						{
 							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_HYPHEN)));
 						}
@@ -727,7 +703,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 							max7221_transfer((uint16_t)((digit_set << 8) | ((decimal % 10) & 0x0F)));
 							decimal /= 10;
 						}
-						if (i == 1)
+						else if (i == 1)
 						{
 							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_HYPHEN)));
 						}
@@ -747,21 +723,52 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 						}
 						break;
 					case 6:
+						// display "ERR" for error
 						if (i == 0)
 						{
-							// display R
-							max7221_print_segments(0b01000110, digit_set);
+							if (decode_mode[digit] == true)
+							{
+								max7221_set_no_decode();
+								// display R
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
+							}
+							else
+							{
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
+							}
+							
 						}
 						else if (i == 1)
 						{
-							// display R
-							max7221_print_segments(0b01000110, digit_set);
+							if (decode_mode[digit] == true)
+							{
+								max7221_set_no_decode();
+								// display R
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
+							}
+							else
+							{
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
+							}
+							
 						}
 						else
 						{
-							// display E
-							max7221_transfer((uint16_t)((digit_set << 8) | (MAX7221_DISPLAY_E)));
+							if (decode_mode[digit] == true)
+							{
+								max7221_set_no_decode();
+								// display E
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01001111));
+							}
+							else
+							{
+								max7221_transfer((uint16_t)((digit_set << 8) | 0b01001111));
+							}
+							_delay_ms(1000);
+							max7221_set_all_decode();
 						}
+						
+						
 						break;
 					default:
 						break;
@@ -893,29 +900,88 @@ void max7221_set_brightness(uint8_t brightness)
 	max7221_transfer((uint16_t)((MAX7221_REG_INTENSITY << 8) | (intensity & 0x0F)));
 }
 
-void max7221_print_segments(uint8_t value, uint8_t digit)
+
+
+void max7221_set_no_decode()
 {
-	uint8_t digit_set = 0;
-	//value = 0b dp,a,b,c,d,e,f,g
 	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_NO_DECODE));
+	for (int i = 0; i < 8; i++) {
+		decode_mode[i] = false;
+	}
+
 	
-	// link digit 0-7 to actual address
-	if (digit > 7)
+	for (int i = 1; i <= 8; i++)
 	{
-		digit_set = 4;
+		max7221_transfer((uint16_t)((i << 8) | 0x00));
 	}
-	else if (digit <= 3)
-	{
-		digit_set = ((digit + 5) & 0x0F);
-	}
-	else
-	{
-		digit_set = ((digit - 3) & 0x0F);
-	}
-	
-	max7221_transfer((uint16_t)((digit_set << 8) | value));
-	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_DECODE_ALL));
 }
 
-// TODO:
-// print_string
+void max7221_set_all_decode()
+{
+	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_DECODE_ALL));
+	for (int i = 0; i < 8; i++)
+	{
+		decode_mode[i] = true;
+	}
+	
+	for (int i = 1; i <= 8; i++)
+	{
+		max7221_transfer((uint16_t)((i << 8) | MAX7221_DISPLAY_BLANK));
+	}
+}
+
+void max7221_print_string(const char *value, uint8_t digit)
+{
+	int length = strlen(value);
+	max7221_set_no_decode();
+	
+	for (int i = 0; i < length; i++)
+	{
+		uint8_t segment_value = MAX7221_DISPLAY_BLANK;  // Default to blank if not found
+		switch (value[i])
+		{
+			case 'a': segment_value = MAX7221_STRING_a; break;
+			case 'b': segment_value = MAX7221_STRING_b; break;
+			case 'c': segment_value = MAX7221_STRING_c; break;
+			case 'd': segment_value = MAX7221_STRING_d; break;
+			case 'e': segment_value = MAX7221_STRING_e; break;
+			case 'f': segment_value = MAX7221_STRING_f; break;
+			case 'g': segment_value = MAX7221_STRING_g; break;
+			case 'h': segment_value = MAX7221_STRING_h; break;
+			case 'i': segment_value = MAX7221_STRING_i; break;
+			case 'j': segment_value = MAX7221_STRING_j; break;
+			case 'k': segment_value = MAX7221_STRING_k; break;
+			case 'l': segment_value = MAX7221_STRING_l; break;
+			case 'm': segment_value = MAX7221_STRING_m; break;
+			case 'n': segment_value = MAX7221_STRING_n; break;
+			case 'o': segment_value = MAX7221_STRING_o; break;
+			case 'p': segment_value = MAX7221_STRING_p; break;
+			case 'q': segment_value = MAX7221_STRING_q; break;
+			case 'r': segment_value = MAX7221_STRING_r; break;
+			case 's': segment_value = MAX7221_STRING_s; break;
+			case 't': segment_value = MAX7221_STRING_t; break;
+			case 'u': segment_value = MAX7221_STRING_u; break;
+			case 'v': segment_value = MAX7221_STRING_v; break;
+			case 'w': segment_value = MAX7221_STRING_w; break;
+			case 'x': segment_value = MAX7221_STRING_x; break;
+			case 'y': segment_value = MAX7221_STRING_y; break;
+			case 'z': segment_value = MAX7221_STRING_z; break;
+			default:  segment_value = MAX7221_DISPLAY_BLANK; break;  // Display blank for unknown characters
+		}
+		if (digit > 7)
+		{
+			digit_set = 4;
+		}
+		else if (digit <= 3)
+		{
+			digit_set = ((digit + 5) & 0x0F);
+		}
+		else
+		{
+			digit_set = ((digit - 3) & 0x0F);
+		}
+		max7221_transfer((uint16_t)((digit_set << 8) | segment_value));
+		digit++;
+	}
+	//todo: special characters
+}

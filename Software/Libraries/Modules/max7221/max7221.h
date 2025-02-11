@@ -135,6 +135,37 @@
 #define MAX7221_DISPLAY_P                 0x0E
 #define MAX7221_DISPLAY_BLANK             0x0F
 
+
+
+
+
+#define MAX7221_STRING_a                 0b01110111
+#define MAX7221_STRING_b                 0b00011111
+#define MAX7221_STRING_c                 0b00001101
+#define MAX7221_STRING_d                 0b00111101
+#define MAX7221_STRING_e                 0b01001111
+#define MAX7221_STRING_f                 0b01000111
+#define MAX7221_STRING_g                 0b01011110
+#define MAX7221_STRING_h                 0b00110111
+#define MAX7221_STRING_i                 0b00000110
+#define MAX7221_STRING_j                 0b00111100
+#define MAX7221_STRING_k                 0b01010111
+#define MAX7221_STRING_l                 0b00001110
+#define MAX7221_STRING_m                 0b01010101
+#define MAX7221_STRING_n                 0b00010101
+#define MAX7221_STRING_o                 0b00011101
+#define MAX7221_STRING_p                 0b01100111
+#define MAX7221_STRING_q                 0b01110011
+#define MAX7221_STRING_r                 0b00000101
+#define MAX7221_STRING_s                 0b01011011
+#define MAX7221_STRING_t                 0b00001111
+#define MAX7221_STRING_u                 0b00111110
+#define MAX7221_STRING_v                 0b00101010
+#define MAX7221_STRING_w                 0b00101011
+#define MAX7221_STRING_x                 0b00010011
+#define MAX7221_STRING_y                 0b00111011
+#define MAX7221_STRING_z                 0b01101101
+
 /** @} */
 
 
@@ -252,6 +283,11 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
  */  
 void max7221_set_brightness(uint8_t brightness);
 
-void max7221_print_segments(uint8_t value, uint8_t digit);
+void max7221_set_no_decode();
+void max7221_set_all_decode();
+
+void max7221_print_string(const char *value, uint8_t digit);
+
+
 
 #endif /* MAX7221_H_ */
