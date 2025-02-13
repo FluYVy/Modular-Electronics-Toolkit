@@ -8,7 +8,7 @@
 #define F_CPU 12000000UL
 #include "max7221.h"
 #include <util/delay.h>
-#include <math.h>
+#include <math.h>se
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -93,15 +93,15 @@ void max7221_start(SpiDevice *device, uint8_t prescaler)
 	max7221_device = device;
 	device_set = 1;
 	max7221_init(prescaler);
-	max7221_transfer((uint16_t)((MAX7221_REG_SHUTDOWN << 8) | MAX7221_SHUTDOWN_MODE));
-	max7221_transfer((uint16_t)((MAX7221_REG_SCAN_LIMIT << 8) | MAX7221_SCAN_LIMIT_7));
-	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_DECODE_ALL));
+	max7221_transfer((uint16_t)((MAX7221_REG_SHUTDOWN << 8) | MAX7221_SHUTDOWN_MODE));			// shutdown for setting parameters
+	max7221_transfer((uint16_t)((MAX7221_REG_SCAN_LIMIT << 8) | MAX7221_SCAN_LIMIT_7));			// use all 8 segments 0-7
+	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_DECODE_ALL));			// set numbers instead of segments
 	for (int i = 0; i < 8; i++)
 	{
 		decode_mode[i] = true;
 	}
-	max7221_transfer((uint16_t)((MAX7221_REG_DISPLAY_TEST << 8) | MAX7221_DISPLAY_TEST_OFF));
-	max7221_transfer((uint16_t)((MAX7221_REG_SHUTDOWN << 8) | MAX7221_NORMAL_OPERATION));
+	max7221_transfer((uint16_t)((MAX7221_REG_DISPLAY_TEST << 8) | MAX7221_DISPLAY_TEST_OFF));	// exit display test mode
+	max7221_transfer((uint16_t)((MAX7221_REG_SHUTDOWN << 8) | MAX7221_NORMAL_OPERATION));		// no shutdown
 	max7221_set_brightness(6);
 	max7221_clear_all();
 }
@@ -486,7 +486,7 @@ void max7221_print_int16(int16_t value, uint8_t digit)
 }
 
 
-void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t length)
+void max7221_print_float_length(float value, int8_t decimal, uint8_t digit, uint8_t length)
 {
     if (device_set)
 	{
@@ -583,7 +583,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 						{
 							if (decode_mode[digit] == true)
 							{
-								max7221_set_no_decode();
+								max7221_set_decode_none();
 								// display R
 								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
 							}
@@ -597,7 +597,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 						{
 							if (decode_mode[digit] == true)
 							{
-								max7221_set_no_decode();
+								max7221_set_decode_none();
 								// display R
 								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
 							}
@@ -611,7 +611,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 						{
 							if (decode_mode[digit] == true)
 							{
-								max7221_set_no_decode();
+								max7221_set_decode_none();
 								// display E
 								max7221_transfer((uint16_t)((digit_set << 8) | 0b01001111));
 							}
@@ -620,7 +620,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 								max7221_transfer((uint16_t)((digit_set << 8) | 0b01001111));
 							}
 							_delay_ms(1000);
-							max7221_set_all_decode();
+							max7221_set_decode_all();
 						}
 						break;
 					case 1:
@@ -691,7 +691,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 						{
 							if (decode_mode[digit] == true)
 							{
-								max7221_set_no_decode();
+								max7221_set_decode_none();
 								// display R
 								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
 							}
@@ -705,7 +705,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 						{
 							if (decode_mode[digit] == true)
 							{
-								max7221_set_no_decode();
+								max7221_set_decode_none();
 								// display R
 								max7221_transfer((uint16_t)((digit_set << 8) | 0b01000110));
 							}
@@ -719,7 +719,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 						{
 							if (decode_mode[digit] == true)
 							{
-								max7221_set_no_decode();
+								max7221_set_decode_none();
 								// display E
 								max7221_transfer((uint16_t)((digit_set << 8) | 0b01001111));
 							}
@@ -728,7 +728,7 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
 								max7221_transfer((uint16_t)((digit_set << 8) | 0b01001111));
 							}
 							_delay_ms(1000);
-							max7221_set_all_decode();
+							max7221_set_decode_all();
 						}
 						
 						
@@ -813,6 +813,16 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
     }
 }
 
+void max7221_print_float(float value, uint8_t decimal)
+{
+	max7221_print_float_length(value, decimal, 0, 8);
+}
+
+void max7221_print_float_default(float value)
+{
+	max7221_print_float_length(value, 0, 0, 8);
+}
+
 
 void max7221_set_brightness(uint8_t brightness)
 {
@@ -832,7 +842,7 @@ void max7221_set_brightness(uint8_t brightness)
 
 
 
-void max7221_set_no_decode()
+void max7221_set_decode_none()
 {
 	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_NO_DECODE));
 	for (int i = 0; i < 8; i++) {
@@ -846,7 +856,7 @@ void max7221_set_no_decode()
 	}
 }
 
-void max7221_set_all_decode()
+void max7221_set_decode_all()
 {
 	max7221_transfer((uint16_t)((MAX7221_REG_DECODE_MODE << 8) | MAX7221_DECODE_ALL));
 	for (int i = 0; i < 8; i++)
@@ -863,7 +873,7 @@ void max7221_set_all_decode()
 void max7221_print_string(const char *value, uint8_t digit)
 {
 	int length = strlen(value);
-	max7221_set_no_decode();
+	max7221_set_decode_none();
 	
 	for (int i = 0; i < length; i++)
 	{

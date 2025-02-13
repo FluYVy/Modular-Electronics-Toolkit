@@ -300,7 +300,9 @@ void max7221_print_int16_default(int16_t value);
  * @param value The number to print
  * @param decimal The number of decimal places to display
  */
-void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t length);
+void max7221_print_float_length(float value, int8_t decimal, uint8_t digit, uint8_t length);
+void max7221_print_float(float value, uint8_t decimal);
+void max7221_print_float_default(float value);
 
 /**  
  * @brief Sets the display brightness  
@@ -312,12 +314,14 @@ void max7221_print_float(float value, int8_t decimal, uint8_t digit, uint8_t len
  */  
 void max7221_set_brightness(uint8_t brightness);
 
-void max7221_set_no_decode();
-void max7221_set_all_decode();
+void max7221_set_decode_none();
+void max7221_set_decode_all();
 
 void max7221_print_string(const char *value, uint8_t digit);
 
 uint8_t map_digit(uint8_t digit);
+
+void max7221_transfer(uint16_t data);
 
 
 
