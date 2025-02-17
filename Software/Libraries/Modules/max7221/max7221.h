@@ -135,6 +135,63 @@
 #define MAX7221_DISPLAY_P                 0x0E
 #define MAX7221_DISPLAY_BLANK             0x0F
 
+
+
+
+// Letters
+#define MAX7221_STRING_a                 0b01110111		// dp,a,b,c,d,e,f,g
+#define MAX7221_STRING_b                 0b00011111
+#define MAX7221_STRING_c                 0b00001101
+#define MAX7221_STRING_d                 0b00111101
+#define MAX7221_STRING_e                 0b01001111
+#define MAX7221_STRING_f                 0b01000111
+#define MAX7221_STRING_g                 0b01011110
+#define MAX7221_STRING_h                 0b00110111
+#define MAX7221_STRING_i                 0b00000110
+#define MAX7221_STRING_j                 0b00111100
+#define MAX7221_STRING_k                 0b01010111
+#define MAX7221_STRING_l                 0b00001110
+#define MAX7221_STRING_m                 0b01010101
+#define MAX7221_STRING_n                 0b00010101
+#define MAX7221_STRING_o                 0b00011101
+#define MAX7221_STRING_p                 0b01100111
+#define MAX7221_STRING_q                 0b01110011
+#define MAX7221_STRING_r                 0b00000101
+#define MAX7221_STRING_s                 0b01011011
+#define MAX7221_STRING_t                 0b00001111
+#define MAX7221_STRING_u                 0b00111110
+#define MAX7221_STRING_v                 0b00101010
+#define MAX7221_STRING_w                 0b00101011
+#define MAX7221_STRING_x                 0b00010011
+#define MAX7221_STRING_y                 0b00111011
+#define MAX7221_STRING_z                 0b01101101
+
+// Numbers 0-9
+#define MAX7221_STRING_0                 0b01111110
+#define MAX7221_STRING_1                 0b00110000
+#define MAX7221_STRING_2                 0b01101101
+#define MAX7221_STRING_3                 0b01111001
+#define MAX7221_STRING_4                 0b00110011
+#define MAX7221_STRING_5                 0b01011011
+#define MAX7221_STRING_6                 0b01011111
+#define MAX7221_STRING_7                 0b01110000
+#define MAX7221_STRING_8                 0b01111111
+#define MAX7221_STRING_9                 0b01111011
+
+// Special Characters
+#define MAX7221_STRING_SPACE             0b00000000    // All segments off
+#define MAX7221_STRING_HYPHEN            0b00000001    // Middle segment (g)
+#define MAX7221_STRING_DEGREE            0b01100011    // ° symbol
+#define MAX7221_STRING_UNDERSCORE        0b00001000    // Lower segment (d)
+#define MAX7221_STRING_EQUALS            0b00001001    // Middle + Lower segments (g + d)
+#define MAX7221_STRING_DOT               0b10000000    // Decimal point
+#define MAX7221_STRING_SLASH             0b00100101
+#define MAX7221_STRING_BACKSLASH		 0b00010011
+#define MAX7221_STRING_QUOTE_SINGLE      0b00100000    // Upper-right segment (f)
+#define MAX7221_STRING_QUOTE_DOUBLE      0b00100010    // Upper-right segment (f)
+
+
+
 /** @} */
 
 
@@ -204,6 +261,7 @@ void max7221_clear_digit(uint8_t digit);
  * @param value The number to print
  * @param display The display to print on
  */
+void max7221_print_uint8_length(uint8_t value, uint8_t digit, uint8_t length);
 void max7221_print_uint8(uint8_t value, uint8_t digit);
 void max7221_print_uint8_default(uint8_t value);
 
@@ -213,6 +271,7 @@ void max7221_print_uint8_default(uint8_t value);
  * @param value The number to print
  * @param display The display to print on
  */
+void max7221_print_int8_length(int8_t value, uint8_t digit, uint8_t length);
 void max7221_print_int8(int8_t value, uint8_t digit);
 void max7221_print_int8_default(int8_t value);
 
@@ -221,6 +280,7 @@ void max7221_print_int8_default(int8_t value);
  * 
  * @param value The number to print
  */
+void max7221_print_uint16_length(uint16_t value, uint8_t digit, uint8_t length);
 void max7221_print_uint16(uint16_t value, uint8_t digit);
 void max7221_print_uint16_default(uint16_t value);
 
@@ -240,16 +300,29 @@ void max7221_print_int16_default(int16_t value);
  * @param value The number to print
  * @param decimal The number of decimal places to display
  */
+void max7221_print_float_length(float value, int8_t decimal, uint8_t digit, uint8_t length);
 void max7221_print_float(float value, uint8_t decimal);
+void max7221_print_float_default(float value);
 
 /**  
  * @brief Sets the display brightness  
  *   
  * @param brightness Value from 1-16 where:  
- *        1 = minimum brightness (1/32 duty cycle)  
- *        16 = maximum brightness (31/32 duty cycle)  
+ *        1 = minimum brightness (1/16 duty cycle)  
+ *        16 = maximum brightness (15/16 duty cycle)  
  * @note Values outside 1-16 will be clamped to this range  
  */  
 void max7221_set_brightness(uint8_t brightness);
+
+void max7221_set_decode_none();
+void max7221_set_decode_all();
+
+void max7221_print_string(const char *value, uint8_t digit);
+
+uint8_t map_digit(uint8_t digit);
+
+void max7221_transfer(uint16_t data);
+
+
 
 #endif /* MAX7221_H_ */
