@@ -8,7 +8,7 @@
 #define F_CPU 12000000UL
 #include "max7221.h"
 #include <util/delay.h>
-#include <math.h>se
+#include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -954,4 +954,4 @@ uint8_t map_digit(uint8_t digit)
 		digit_set = ((digit - 3) & 0x0F);
 	}
 	return digit_set;
-}
+}	
