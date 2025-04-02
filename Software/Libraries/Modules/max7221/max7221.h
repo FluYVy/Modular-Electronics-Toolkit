@@ -9,7 +9,19 @@
 #ifndef MAX7221_H_
 #define MAX7221_H_
 
-#include "spi_master.h"
+#include <avr/io.h>
+
+/**  
+ * @brief Structure to represent an SPI device.  
+ *  
+ * This structure contains the necessary information to control a specific  
+ * SPI device, including its chip select (CS) pin configuration.  
+ */  
+typedef struct {  
+    volatile uint8_t *cs_ddr;  /**< Pointer to the data direction register for the CS pin */  
+    volatile uint8_t *cs_port;  /**< Pointer to the port register for the CS pin */  
+    uint8_t cs_pin;             /**< The specific pin number for the CS signal */  
+} SpiDevice;
 
 
 // Register Addresses
