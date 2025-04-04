@@ -76,6 +76,25 @@
       this.setStyle("logic");
     }
   };
+  Blockly.Blocks['operators'] = 
+{
+    init: function() {
+      this.appendValueInput('NAME');
+      this.appendValueInput('NAME')
+        .appendField(new Blockly.FieldDropdown([
+            ['LEFT', 'opt_LEFT'],
+            ['RIGHT', 'opt_RIGHT'],
+            ['AND', 'opt_AND'],
+            ['OR', 'opt_OR'],
+            ['XOR', 'opt_XOR']
+          ]), 'Operators');
+      this.setInputsInline(true)
+      this.setOutput(true, null);
+      this.setTooltip('');
+      this.setHelpUrl('');
+    }
+  };
+                    
   Blockly.Blocks['math_basic'] =  {
     init: function() {
       this.appendValueInput('value1');
@@ -332,7 +351,9 @@ Blockly.Blocks['utils_delay'] =
         this.setHelpUrl('');
         this.setStyle('utils');
       }
+      
 };
+                    
                     
 
                       

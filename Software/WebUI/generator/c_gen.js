@@ -49,7 +49,6 @@ useInits.fill(false);
 export var useDefines = Array(Object.keys(definitions).length);
 useDefines.fill(false);
 
-
 cGenerator.forBlock['events_start'] = function(block){
     return '// start\n'
 };
@@ -64,14 +63,14 @@ cGenerator.forBlock['scd41_start_measure_single'] = function(block){
     useIncludes[includes.scd41] = true;
     useInits[inits.i2c_master] = true;
 
-    return 'measure_single_shot(0x01);'
+    return 'scd41_measure_single_shot(0x01);'
 };
 
 cGenerator.forBlock['scd41_retrieve_values'] = function(block){
     useIncludes[includes.scd41] = true;
     useInits[inits.i2c_master] = true;
 
-    return 'read_measurement();'
+    return 'scd41_read_measurement();'
 };
 
 cGenerator.forBlock['scd41_get_value'] = function(block){
@@ -157,6 +156,27 @@ cGenerator.forBlock['utils_delay'] = function(block, generator){
 };
 cGenerator.forBlock['input_string'] = function(block, generator){
     return[ "\"" + block.getFieldValue('Test') + "\"", Order.NONE];
-
 }
 
+//math und datatypes hinzufügen
+cGenerator.forBlock['math_number'] = function(block){
+    return [block.getFieldValue('NUM'), Order.ATOMIC];
+};
+
+cGenerator.forBlock['math_arithmetic'] = function(block, generator){
+    const operator = block.getFieldValue('OP');
+    const left = generator.valueToCode(block, 'A', Order.ATOMIC) || "0";
+    const right = generator.valueToCode(block, 'B', Order.ATOMIC) || "0";
+    return [`(${left} ${operator} ${right})`, Order.ATOMIC];
+};
+
+cGenerator.forBlock['variables_get'] = function(block){
+    const varName = block.getFieldValue('VAR');
+    return [varName, Order.ATOMIC];
+};
+
+cGenerator.forBlock['variables_set'] = function(block, generator){
+    const varName = block.getFieldValue('VAR');
+    const value = generator.valueToCode(block, 'VALUE', Order.ATOMIC) || "0";
+    return `${varName} = ${value};\n`;
+};
