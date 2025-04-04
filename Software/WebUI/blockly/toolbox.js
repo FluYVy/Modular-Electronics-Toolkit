@@ -55,6 +55,10 @@ const toolbox = {
                 {
                     "kind": "block",
                     "type": "math_basic"
+                },
+                {
+                    "kind": "block",
+                    "type": "operators"
                 }
             ] // Fehler: Es darf hier kein Komma sein, korrigiert.
         },
@@ -110,7 +114,19 @@ const toolbox = {
                     "type": "utils_delay"
                 }
             ]
-        }
+        },
+        {
+            "kind": "category",
+            "name": "Pixelmatrix",
+            "categorystyle": "pixelmatrix",
+            "contents": [
+                {
+                    "kind": "block",
+                    "type": "pixelmatrix"
+                },
+            ]
+        },
+       
     ]
 };
 
@@ -118,7 +134,7 @@ const toolbox = {
         
 
 const theme = Blockly.Theme.defineTheme('Theme', {
-    'base': Blockly.Themes.Classic, // Optional, kannst du entfernen, falls gewünscht.
+    'base': Blockly.Themes.Classic, // Optional, kann man entfernen, falls gewünscht.
     'blockStyles': {
         'scd41': {
             'colourPrimary': '#007fff'
@@ -137,6 +153,9 @@ const theme = Blockly.Theme.defineTheme('Theme', {
         },
         'logic': {
             'colourPrimary': '#195e83'
+        },
+        'pixelmatrix': {
+            'colourPrimary': '#FF0000'
         },
         'math': {
             'colourPrimary': '#69bdd2'
@@ -157,6 +176,9 @@ const theme = Blockly.Theme.defineTheme('Theme', {
         },
         'logic': {
             'colour': '#195e83'
+        },
+        'pixelmatrix': {
+            'colour': '#FF0000'
         },
         'math': {
             'colour': '#69bdd2'
